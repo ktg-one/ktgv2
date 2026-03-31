@@ -50,6 +50,7 @@ See: `.planning/PROJECT.md` (updated 2026-04-01)
 
 ### Decisions
 
+- **Hub chat layout:** User-selectable **single vs dual** mode (playground-style), not “dual banned.” Dual = two visible streams when enabled; single = one `useChat` path in the UI. Document input rule (one send → both vs separate) in UI-SPEC or requirements before shipping.
 - AI SDK: `@ai-sdk/google` (Vercel AI SDK) chosen over raw `@google/genai` — unified 21-model interface
 - Model selector: global (not per-persona) — Kevin's explicit decision
 - Component structure: 745-line monolith `page.jsx` — decomposition deferred until working
@@ -58,7 +59,8 @@ See: `.planning/PROJECT.md` (updated 2026-04-01)
 
 ### Pending Todos
 
-3+ todos in `.planning/todos/pending/` include:
+4+ todos in `.planning/todos/pending/` include:
+- `2026-04-01-document-hub-chat-single-vs-dual-playground-mode.md` — document playground-style single/dual mode + UX contract (wire second `useChat` when dual)
 - `2026-04-01-planning-md-only-and-doc-backlog.md` — markdown-only alignment, ulti-chat narrative, AGENTS/PROJECT/STATE follow-ups
 - Invoke skill before executing (general)
 - Verify stacking cards ScrollTrigger fix (ui)
