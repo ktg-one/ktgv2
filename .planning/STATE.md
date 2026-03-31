@@ -79,6 +79,14 @@ Hub chat todos (from progress.md):
 2. **Presets feature**: specced, not built — save/load persona+model+injects+skills+MCPs to localStorage
 3. **MCP real connections**: requires `@ai-sdk/mcp` + decision on which servers have HTTP endpoints
 
+### External audit action items (2026-04-01)
+
+**Full table:** `.planning/v1.1-MILESTONE-AUDIT.md` (Nyquist-style + **gsd-ui-auditor** six-pillar + shadcn).
+
+**Nyquist (condensed):** Record Phase 6 Vercel smoke; reconcile **REQUIREMENTS.md** checkboxes; 01-02 marketing QA; Zod/install reproducibility note; honest MCP stub vs real wiring.
+
+**UI audit (condensed):** Tokenize cyan accent; **aria** on switches / inject controls; **reduced-motion**; **AlertDialog** for destructive deletes; wire **single/dual** playground mode to real UI (or single-only until then); prefer shadcn **Input/Textarea** in modals.
+
 ### Blockers/Concerns
 
 - **Phase 6 evidence:** If keys exist only on Vercel, validate on **preview/production URLs**; local `.env.local` optional via `vercel env pull .env.local`.
