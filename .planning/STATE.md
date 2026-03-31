@@ -1,21 +1,26 @@
 # Project State
 
+**Scope (source of truth):** Runtime behaviour: `src/app/**` and `src/app/api/**`. Hub narrative: this file + `.planning/ROADMAP.md`. Legacy AI Studio copy: `_reference/ulti-chat/` (gitignored), **moved** from `src/app/ulti-chat/` during integration — not an ad-hoc delete.
+
+**Roadmap evolution (2026-04-01):** GSD roadmapper: keep **marketing 1–3** and **hub branch** as two visible tracks until merge; after `main` merge, fold hub into **Phases 4+**. See `.planning/ROADMAP.md` → Planning discipline + Roadmap evolution.
+
 ## Project Reference
 
-See: `.planning/PROJECT.md` (updated 2026-03-21)
+See: `.planning/PROJECT.md` (updated 2026-04-01)
 
 **Core value:** Visitors reliably get a fast, credible brand experience and can read blog content sourced from WordPress without the marketing site depending on WordPress for page shells or routing.
 
-**Current focus:** Feature branch `feature/ulti-chat-integration` — hub chat at `/hub/chat` is built and passing build. Blocked on API keys for live testing (Phase 6 verification).
+**Current focus:** **Milestone v1.1** (see `.planning/MILESTONES.md` + `PROJECT.md`) — prove hub on **Vercel** (secrets in dashboard — not verifiable from repo alone), close Phase 6 with **written smoke evidence**, then Phase 7 polish or defer, then merge.
 
 ## Current Position
 
-**Branch:** `feature/ulti-chat-integration` (off main @ `9b46dde`)
-**Phase:** Hub Chat — Phase 6 of 7 (Verification — IN PROGRESS)
-**Status:** Build passes. Blocked on `.env.local` API keys to test live.
-**Last activity:** 2026-03-24 — context restored from peers; planning files updated
+**Milestone:** v1.1 — Hub production evidence, polish, merge  
+**Branch:** `feature/ulti-chat-integration` (off main @ `9b46dde`)  
+**Hub track:** Phase 6 of 7 — **Verification** (local + **Vercel preview/prod**; user reports secrets configured on Vercel — **record pass/fail in progress note or checklist**)  
+**Status:** `npm run build` passes (2026-04-01); `/hub/chat` **useChat** wiring fixed (`handleSubmit` / `input` / `appendA`). **End-to-end chat not verified in this session.**  
+**Last activity:** 2026-04-01 — `$gsd-new-milestone` → v1.1; `MILESTONES.md` created
 
-**Progress:** [████████░░] 75% (Phases 1–5 complete, Phase 6 in progress, Phase 7 pending)
+**Progress — hub table:** [████████░░] Phase 6 closes when smoke checklist is done; Phase 7 = polish backlog (UI **not** “all finished” until you say those items are done or waived)
 
 ## Roadmap Phase Status
 
@@ -26,7 +31,7 @@ See: `.planning/PROJECT.md` (updated 2026-03-21)
 | 3. Component decomposition | ⏸️ Deferred (monolith accepted for now) |
 | 4. shadcn/ui conversion | ✅ Complete |
 | 5. Route integration (`/hub/chat`) | ✅ Complete |
-| 6. Verification (live testing) | 🔄 In Progress — needs API keys |
+| 6. Verification (live testing) | 🔄 In Progress — run smoke on Vercel + local; secrets **reported** on Vercel (confirm in UI) |
 | 7. Polish (dots, Iosevka, skills, presets) | ⏸️ Pending |
 
 ## Performance Metrics
@@ -53,7 +58,8 @@ See: `.planning/PROJECT.md` (updated 2026-03-21)
 
 ### Pending Todos
 
-2 original todos in `.planning/todos/pending/`:
+3+ todos in `.planning/todos/pending/` include:
+- `2026-04-01-planning-md-only-and-doc-backlog.md` — markdown-only alignment, ulti-chat narrative, AGENTS/PROJECT/STATE follow-ups
 - Invoke skill before executing (general)
 - Verify stacking cards ScrollTrigger fix (ui)
 
@@ -73,13 +79,13 @@ Hub chat todos (from progress.md):
 
 ### Blockers/Concerns
 
-- **Live testing blocked**: no API keys in `.env.local`. Run `vercel env pull .env.local` to pull from dashboard.
-- Zod version mismatch: `package.json` says `^4.3.6` but lockfile has `3.25.76`. Do NOT run `npm install` until resolved — could break tool() definitions. Pin to `3.25.76`.
+- **Phase 6 evidence:** If keys exist only on Vercel, validate on **preview/production URLs**; local `.env.local` optional via `vercel env pull .env.local`.
+- **Zod:** Root declares `^4.3.6`; lockfile may list multiple resolutions (including 3.x for transitive deps). Before treating Phase 6 as production-proof, confirm `npm ci` / `pnpm install` reproduces clean build on CI; resolve only if installs or `tool()` break.
 - Google search grounding incompatible with custom tools (Google API constraint) — already handled in route.js with conditional logic.
 
 ## Session Continuity
 
-**Last session:** 2026-03-23 — built hub chat (Phases 1–5), all SDK bugs fixed, build passing
-**Stopped at:** Ready for live testing — waiting on API keys
+**Last session:** 2026-04-01 — planning pass (roadmapper, plan-checker); hub remains Phase 6 (live verify)
+**Stopped at:** Hub Phase 6 — API keys + smoke checklist; marketing Phase 1 plan **01-02** still has open QA tasks
 **Resume file:** None
-**Context source:** Peer instances `dhs1dgze` + `pv76qdyn` (no mem0 saved from session)
+**Context source:** `.planning/ROADMAP.md` Progress + Hub table; `01-02-PLAN.md` for shell/motion QA
