@@ -11,6 +11,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
+import { GlitchText } from "@/components/GlitchText";
 
 // Register ScrollTrigger safely
 if (typeof window !== "undefined") {
@@ -101,7 +102,7 @@ export function ValidationSection({ auditData }) {
       card: (
         <div className="digital-text">
           <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-6 lowercase">
-            {data.c2.title}
+            <GlitchText>{data.c2.title}</GlitchText>
           </h3>
           <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
             {data.c2.body}
