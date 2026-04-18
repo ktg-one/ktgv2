@@ -52,41 +52,217 @@ export function PhilosophySection({ philosophyData }) {
         return;
       }
 
+      // --- Heading: Tympanus Effect 19 — rotationX -90 flip from top with z depth ---
       const headingChars = textRef.current?.querySelectorAll("h2 .split-char");
       if (headingChars?.length) {
-        gsap.set(headingChars, { opacity: 0, y: 12 });
-        gsap.to(headingChars, {
-          opacity: 1,
-          y: 0,
-          stagger: 0.03,
-          duration: 0.5,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: textRef.current,
-            start: "top 78%",
-            once: true,
+        headingChars.forEach((char) =>
+          gsap.set(char.parentNode, { perspective: 1000 })
+        );
+        gsap.fromTo(
+          headingChars,
+          {
+            willChange: "opacity, transform",
+            transformOrigin: "50% 0%",
+            opacity: 0,
+            rotationX: -90,
+            z: -200,
           },
-        });
+          {
+            ease: "power1",
+            opacity: 1,
+            stagger: 0.05,
+            rotationX: 0,
+            z: 0,
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: "center bottom",
+              end: "bottom top+=20%",
+              scrub: true,
+            },
+          }
+        );
       }
 
-      quoteRefs.current.forEach((el) => {
-        if (!el) return;
-        const chars = el.querySelectorAll(".split-char");
-        if (!chars.length) return;
-        gsap.set(chars, { opacity: 0, y: 10 });
-        gsap.to(chars, {
-          opacity: 1,
-          y: 0,
-          stagger: 0.022,
-          duration: 0.55,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: el,
-            start: "top 88%",
-            once: true,
+      // --- Description paragraphs: Tympanus Effect 16 — word opacity with slight rotate ---
+      const descParagraphs = textRef.current?.querySelectorAll("p");
+      if (descParagraphs?.length) {
+        gsap.fromTo(
+          descParagraphs,
+          {
+            transformOrigin: "0% 50%",
+            opacity: 0.1,
+            rotate: 3,
           },
-        });
-      });
+          {
+            ease: "none",
+            opacity: 1,
+            rotate: 0,
+            stagger: 0.15,
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: "top bottom-=20%",
+              end: "center top+=20%",
+              scrub: true,
+            },
+          }
+        );
+      }
+
+      // --- Quote 1: Tympanus Effect 17 — random 3D rotateX/z scatter per char ---
+      const q1 = quoteRefs.current[0];
+      if (q1) {
+        const chars = q1.querySelectorAll(".split-char");
+        if (chars.length) {
+          chars.forEach((char) =>
+            gsap.set(char.parentNode, { perspective: 1000 })
+          );
+          gsap.fromTo(
+            chars,
+            {
+              willChange: "opacity, transform",
+              opacity: 0,
+              rotateX: () => gsap.utils.random(-120, 120),
+              z: () => gsap.utils.random(-200, 200),
+            },
+            {
+              ease: "none",
+              opacity: 1,
+              rotateX: 0,
+              z: 0,
+              stagger: 0.02,
+              scrollTrigger: {
+                trigger: q1,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              },
+            }
+          );
+        }
+      }
+
+      // --- Quote 2: Tympanus Effect 21 — chars explode from center with depth per word ---
+      const q2 = quoteRefs.current[1];
+      if (q2) {
+        const words = [...q2.querySelectorAll(".split-word")];
+        for (const word of words) {
+          const chars = word.querySelectorAll(".split-char");
+          if (!chars.length) continue;
+          chars.forEach((char) =>
+            gsap.set(char.parentNode, { perspective: 2000 })
+          );
+          gsap.fromTo(
+            chars,
+            {
+              willChange: "opacity, transform",
+              opacity: 0,
+              y: (i, _el, arr) => -40 * Math.abs(i - arr.length / 2),
+              z: () => gsap.utils.random(-1500, -600),
+              rotationX: () => gsap.utils.random(-500, -200),
+            },
+            {
+              ease: "power1.inOut",
+              opacity: 1,
+              y: 0,
+              z: 0,
+              rotationX: 0,
+              stagger: { each: 0.06, from: "center" },
+              scrollTrigger: {
+                trigger: word,
+                start: "top bottom",
+                end: "top top+=15%",
+                scrub: true,
+              },
+            }
+          );
+        }
+      }
+
+      // --- Quote 3: Tympanus Effect 28 — scale + rotation + blur fan-out per word ---
+      const q3 = quoteRefs.current[2];
+      if (q3) {
+        const words = [...q3.querySelectorAll(".split-word")];
+        for (const word of words) {
+          const chars = word.querySelectorAll(".split-char");
+          const len = chars.length;
+          if (!len) continue;
+          gsap.fromTo(
+            chars,
+            {
+              willChange: "transform, filter",
+              transformOrigin: "50% 100%",
+              scale: (i) => {
+                const idx =
+                  i < Math.ceil(len / 2)
+                    ? i
+                    : Math.ceil(len / 2) -
+                      Math.abs(Math.floor(len / 2) - i) -
+                      1;
+                return gsap.utils.mapRange(
+                  0,
+                  Math.ceil(len / 2),
+                  0.5,
+                  2.1,
+                  idx
+                );
+              },
+              y: (i) => {
+                const idx =
+                  i < Math.ceil(len / 2)
+                    ? i
+                    : Math.ceil(len / 2) -
+                      Math.abs(Math.floor(len / 2) - i) -
+                      1;
+                return gsap.utils.mapRange(
+                  0,
+                  Math.ceil(len / 2),
+                  0,
+                  60,
+                  idx
+                );
+              },
+              rotation: (i) => {
+                const idx =
+                  i < Math.ceil(len / 2)
+                    ? i
+                    : Math.ceil(len / 2) -
+                      Math.abs(Math.floor(len / 2) - i) -
+                      1;
+                return i < len / 2
+                  ? gsap.utils.mapRange(
+                      0,
+                      Math.ceil(len / 2),
+                      -4,
+                      0,
+                      idx
+                    )
+                  : gsap.utils.mapRange(
+                      0,
+                      Math.ceil(len / 2),
+                      0,
+                      4,
+                      idx
+                    );
+              },
+              filter: "blur(12px) opacity(0)",
+            },
+            {
+              ease: "power2.inOut",
+              y: 0,
+              rotation: 0,
+              scale: 1,
+              filter: "blur(0px) opacity(1)",
+              scrollTrigger: {
+                trigger: word,
+                start: "top bottom+=40%",
+                end: "top top+=15%",
+                scrub: true,
+              },
+              stagger: { amount: 0.15, from: "center" },
+            }
+          );
+        }
+      }
 
       const t = requestAnimationFrame(() => {
         ScrollTrigger.refresh();
