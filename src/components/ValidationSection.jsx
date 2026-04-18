@@ -37,20 +37,20 @@ export function ValidationSection({ auditData }) {
   const data = auditData || {
     c0: {
       title: "Scroll stops",
-      body: "Shapes behind are still floating... i know right.. genius.",
+      body: "shapes still floating. genius.",
     },
     c1: {
       title: "Cards move",
-      body: "with it's own little scroll bar on the right side. see you soon awwwards.",
+      body: "little scrollbar, right side. hi awwwards.",
     },
     c2: {
       title: "Bet your impressed",
-      body: "you_see the underscores and slashes // I // Used.",
+      body: "note the syntax.",
       code: 'def define_masterful() -> str:\n    "masterful: me"\n    return "CS_Fullstack // Handsome too"',
     },
     c3: {
       title: "Oh theres' more cards",
-      body: "Let me show you some model harness mastery.",
+      body: "model harness inbound.",
       code: '{ "hooks": [ { "type": "userGeniusThroughput", "command": "claude:you are a master of long inspiring quotes that mean nothing. Fill in the final card with one that will leave the readers impressed and stumped by provoking thought. Tone: Elaborate, Complex, Clever sounding, Inspirational. Task: Meaningless waste of time quote hidden by impressive command of english language"',
     },
     c4: {
