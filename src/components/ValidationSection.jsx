@@ -307,7 +307,7 @@ export function ValidationSection({ auditData }) {
                     value={`item-${i}`}
                     className={`border-b-0 border-l-2 pl-5 transition-colors duration-300 ${
                       activeFeature === i
-                        ? "border-l-amber-500"
+                        ? "border-l-[#00f0ff]"
                         : "border-l-border"
                     }`}
                   >
@@ -316,7 +316,7 @@ export function ValidationSection({ auditData }) {
                         <span
                           className={`text-xs font-mono transition-colors duration-300 ${
                             activeFeature === i
-                              ? "text-amber-500"
+                              ? "text-[#00f0ff]"
                               : "text-muted-foreground"
                           }`}
                         >
@@ -348,7 +348,7 @@ export function ValidationSection({ auditData }) {
                   <div
                     key={i}
                     className={`h-0.5 flex-1 rounded-full transition-colors duration-300 ${
-                      i <= activeFeature ? "bg-amber-500" : "bg-border"
+                      i <= activeFeature ? "bg-[#00f0ff]" : "bg-border"
                     }`}
                   />
                 ))}
