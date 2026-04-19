@@ -31,7 +31,7 @@ No test suite is configured. Use `pnpm dev` and browser to verify changes.
 
 **Pages:**
 - `/` — Homepage: HeroSection, ExpertiseSection, PhilosophySection, ContactCTA
-- `/blog`, `/blog/[slug]` — Blog backed by external WordPress instance (`lawngreen-mallard-558077.hostingersite.com`); fetched via `src/lib/wordpress.js`
+- `/blog`, `/blog/[slug]` — Blog backed by WordPress via `https://ktg.one/wp` (reverse-proxy to Hostinger backend); fetched via `src/lib/wordpress.js`. Override with `NEXT_PUBLIC_WORDPRESS_URL` if needed.
 - `/expertise` — Expertise detail page
 - `/validation` — Validation/credentials section
 - `/hub` — Redirects to `/hub/snippets`; tool hub entry point

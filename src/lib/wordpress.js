@@ -5,7 +5,7 @@
  * - Health / connection checks → cache: 'no-store' (live CMS reachability).
  * - Post list + post-by-slug reads → next: { revalidate: 60 } (ISR, balance freshness vs load).
  */
-const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://lawngreen-mallard-558077.hostingersite.com';
+const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL || 'https://ktg.one/wp';
 const REQUEST_TIMEOUT = 10000; // 10 second timeout
 
 // Helper: fetch with timeout
