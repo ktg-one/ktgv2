@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Session Boot
+
+Type `/init-p` at session start. Warms `in-memoria` + `serena`, indexes via global `jcodemunch`, logs mem0 with `[YYYY-MM-DD][cc][ktgv2][R/10]`, recalls project memory. Output is exactly 4 lines — read them.
+
 ## Commands
 
 ```bash
@@ -63,14 +67,29 @@ No test suite is configured. Use `pnpm dev` and browser to verify changes.
 - **"use client" boundary:** Layout globals are server components; anything using GSAP, scroll, or browser APIs needs `"use client"`.
 - **Lowercase styling:** UI text is styled lowercase via Tailwind — this is intentional brand convention, not a bug.
 
-## OpenMemory (mem0) Protocol
+## Memory
 
-The `.cursor/rules/openmemory.mdc` rule requires mem0 searches **before and during** any code implementation task (`project_id: kevinktg/ktgv2`). For any code change:
-1. Search mem0 for relevant patterns/preferences before starting
-2. Search at checkpoints (new file, new function, architecture decision)
-3. Store implementation memory on completion
+Session memory handled by `/init-p` (see Session Boot). For ad-hoc recall: mem0 MCP with `project_id: kevinktg/ktgv2`, tag format `[YYYY-MM-DD][cc][ktgv2][R/10]`. Auto-memory index lives at `~/.claude/projects/D--projects/memory/MEMORY.md`.
 
-This applies to code tasks only — skip for discussion or information retrieval.
+## Tool Menu
+
+- Big source reads (>200 lines) → `jcodemunch` (global) before `Read`
+- Semantic codebase recall → `in-memoria` (project)
+- LSP symbol nav → `serena` (project, scoped to `D:/projects/sites/ktgv2 (2)/ktgv2`)
+- GSAP questions → skills `gsap-react`, `gsap-scrolltrigger`, `gsap-performance`, `awwwards-animations`
+- Deploy → skill `deploy-to-vercel` or manual `git push ktg-live HEAD:main`
+
+Default to MCP/skill over bare `Read`/`Grep` when the task involves code exploration.
+
+## Deploy
+
+Production repo is `ktg-one/ktgv2` via remote alias `ktg-live`. Vercel is wired to the `main` branch of that repo.
+
+```bash
+git push ktg-live HEAD:main   # triggers Vercel production build
+```
+
+`origin` (`kevinktg/ktgv2`) is kept as a reference copy only — do **not** expect pushes there to deploy.
 
 ## Environment
 
