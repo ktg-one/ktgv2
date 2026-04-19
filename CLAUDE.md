@@ -31,7 +31,7 @@ No test suite is configured. Use `pnpm dev` and browser to verify changes.
 
 **Pages:**
 - `/` — Homepage: HeroSection, ExpertiseSection, PhilosophySection, ContactCTA
-- `/blog`, `/blog/[slug]` — Blog backed by WordPress via `https://ktg.one/wp` (reverse-proxy to Hostinger backend); fetched via `src/lib/wordpress.js`. Override with `NEXT_PUBLIC_WORDPRESS_URL` if needed.
+- `/blog`, `/blog/[slug]` — Blog backed by WordPress on Hostinger (`lawngreen-mallard-558077.hostingersite.com`, 200 OK as of 2026-04-19). Kevin mentioned a reverse-proxy at ktg.one is planned/partial — do not switch the URL until confirmed live. Fetched via `src/lib/wordpress.js`; override with `NEXT_PUBLIC_WORDPRESS_URL`.
 - `/expertise` — Expertise detail page
 - `/validation` — Validation/credentials section
 - `/hub` — Redirects to `/hub/snippets`; tool hub entry point
