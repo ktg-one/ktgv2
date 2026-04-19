@@ -91,6 +91,29 @@ git push ktg-live HEAD:main   # triggers Vercel production build
 
 `origin` (`kevinktg/ktgv2`) is kept as a reference copy only — do **not** expect pushes there to deploy.
 
+## Voice
+
+Site copy follows a specific register — **literal description + 1-2 word deadpan kicker**. Examples shipping on `/validation`:
+
+- `"Scroll stops. shapes still floating. genius."`
+- `"Cards move. little scrollbar, right side. hi awwwards."`
+- `"Bet your impressed. note the syntax."` ← typo in "your" is intentional, do NOT fix
+
+Anti-patterns to avoid:
+- LinkedIn thought-leader lexicon: `synergy`, `unlock`, `seamless`, `architectural verification`, `State of the art`, `We don't just X. We Y.`
+- Triadic workflow steps labeled as "PRINCIPLE 01/02/03"
+- Any copy that a VC would clap for
+
+Kevin's typos / lowercase / ungrammatical phrasings in copy = **voice**, not errors. Don't "correct" unless explicitly asked. Lowercase UI text is brand convention.
+
+## Cautious Defaults
+
+Kevin has lost work to a Cursor auto-loop that ran overnight. On this project:
+- Never force-push without explicit go-ahead
+- Never run destructive ops (`rm -rf`, `git reset --hard`, schema wipes) without confirmation
+- If a file seems missing or malformed, ask before recreating — it may be partial from the incident
+- Don't recommend auto-loop tools (Ralph, aider --auto, Cursor composer loop) without flagging the risk inline
+
 ## Environment
 
 Required env vars (`.env.local`):
