@@ -1,6 +1,4 @@
 {
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "installCommand": "pnpm install --frozen-lockfile"
+  "regions": ["iad1"]
 }
-
