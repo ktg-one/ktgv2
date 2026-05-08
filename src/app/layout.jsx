@@ -2,10 +2,6 @@ import { Syne, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import { ClientLayout } from "@/components/ClientLayout";
-import { GeometricBackground } from "@/components/GeometricBackground";
-import { CursorDot } from "@/components/CursorDot";
-import { DockNav } from "@/components/DockNav";
 
 const syne = Syne({
   weight: ["400", "700", "800"],
@@ -74,17 +70,8 @@ export default function RootLayout({ children }) {
         className={`${syne.variable} ${inter.variable} ${iosevka.variable} antialiased text-foreground overflow-x-hidden selection:bg-white selection:text-black relative`}
         suppressHydrationWarning
       >
-        <ClientLayout>
-          {/* Global GeometricBackground - always visible on all pages, behind all content */}
-          <GeometricBackground fixed />
-          <DockNav />
-
-          {children}
-          <SpeedInsights />
-
-          {/* Global CursorDot - MUST be last to stay on top of all stacking contexts */}
-          <CursorDot />
-        </ClientLayout>
+        {children}
+        <SpeedInsights />
       </body>
     </html>
   );

@@ -2,11 +2,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useChat } from '@ai-sdk/react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { DefaultChatTransport } from 'ai';
+import { Streamdown } from 'streamdown';
 import {
   Bot, Terminal, Sparkles, LineChart, Globe, Settings,
   Send, User, Cpu, Zap, Shield, Search, Plus, X,
@@ -21,6 +21,8 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
@@ -62,9 +64,9 @@ const PROMPT_INJECTS = [
 ];
 
 const SKILLS = [
-  { id: 'web-search', name: 'web search', description: 'google search grounding', icon: Globe },
-  { id: 'code-exec', name: 'code execution', description: 'run python via gemini', icon: Code },
-  { id: 'db-access', name: 'database access', description: 'query ktg snippets db', icon: Database },
+  { id: 'web-search', name: 'web search', description: 'google search grounding', icon: Globe, template: 'search the web for ' },
+  { id: 'code-exec', name: 'code execution', description: 'run python via gemini', icon: Code, template: 'write and run python to ' },
+  { id: 'db-access', name: 'database access', description: 'query ktg snippets db', icon: Database, template: 'find snippets about ' },
 ];
 
 const MCP_SERVERS = [
@@ -207,6 +209,19 @@ export default function HubChat() {
   const [newMacro, setNewMacro] = useState({ name: '', iconName: 'Command', prompt: '' });
   const [newPersona, setNewPersona] = useState({ name: '', prompt: '', iconName: 'Bot', colorIdx: 0, customColor: '#00f0ff' });
 
+  // 8-slot prompt-modifier loadout. Each slot is either null (empty) or
+  // { id, label, instruction }. Slots 0-4 prefill with built-in modifiers
+  // so first-load isn't a wall of empty grey buttons.
+  const SLOT_COUNT = 8;
+  const DEFAULT_LOADOUT = [
+    ...PROMPT_INJECTS.map(i => ({ id: i.id, label: i.label, instruction: i.instruction })),
+    ...Array(SLOT_COUNT - PROMPT_INJECTS.length).fill(null),
+  ];
+  const [loadoutSlots, setLoadoutSlots] = useState(DEFAULT_LOADOUT);
+  const [isModifierModalOpen, setIsModifierModalOpen] = useState(false);
+  const [activeSlotIndex, setActiveSlotIndex] = useState(null);
+  const [newModifier, setNewModifier] = useState({ label: '', instruction: '' });
+
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -219,6 +234,17 @@ export default function HubChat() {
     if (saved) try { setMacros(JSON.parse(saved)); } catch {}
   }, []);
   useEffect(() => { localStorage.setItem('hub-chat-macros', JSON.stringify(macros)); }, [macros]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('hub-chat-loadout:v1');
+    if (saved) try {
+      const parsed = JSON.parse(saved);
+      // Ensure exactly SLOT_COUNT slots — pad or truncate if storage drifted.
+      const padded = Array.from({ length: SLOT_COUNT }, (_, i) => parsed[i] ?? null);
+      setLoadoutSlots(padded);
+    } catch {}
+  }, []);
+  useEffect(() => { localStorage.setItem('hub-chat-loadout:v1', JSON.stringify(loadoutSlots)); }, [loadoutSlots]);
 
   const [presets, setPresets] = useState([]);
   const [presetNameInput, setPresetNameInput] = useState('');
@@ -279,57 +305,142 @@ export default function HubChat() {
   const buildSystemPrompt = (personaId, injects) => {
     const p = allPersonas.find(x => x.id === (personaId ?? selectedPersonaId)) || allPersonas[0];
     let sys = p.prompt;
-    const injectInstructions = PROMPT_INJECTS
-      .filter(i => (injects ?? activeInjects).includes(i.id))
-      .map(i => i.instruction);
+    const activeSet = new Set(injects ?? activeInjects);
+    const injectInstructions = loadoutSlots
+      .filter(slot => slot && activeSet.has(slot.id))
+      .map(slot => slot.instruction);
     if (injectInstructions.length > 0)
       sys += '\n\nAdditional Modifiers:\n' + injectInstructions.join('\n');
     return sys;
   };
 
+  // Local input state — useChat in @ai-sdk/react@3 no longer manages this for you.
+  const [input, setInput] = useState('');
+
+  // Refs hold the current chat body so prepareSendMessagesRequest sees fresh
+  // values per-request without recreating the transport (which would reset the chat).
+  const bodyRefA = useRef({});
+  bodyRefA.current = {
+    model: selectedModelId,
+    systemPrompt: buildSystemPrompt(selectedPersonaId, activeInjects),
+    enableWebSearch: activeSkills.includes('web-search'),
+    activeSkills,
+    activeMcps,
+  };
+  const bodyRefB = useRef({});
+  bodyRefB.current = {
+    model: selectedModelIdB,
+    systemPrompt: buildSystemPrompt(selectedPersonaIdB, activeInjects),
+    enableWebSearch: activeSkills.includes('web-search'),
+    activeSkills,
+    activeMcps,
+  };
+
+  const transportA = useMemo(() => new DefaultChatTransport({
+    api: '/api/hub/chat',
+    prepareSendMessagesRequest: ({ messages }) => ({
+      body: { messages, ...bodyRefA.current },
+    }),
+  }), []);
+
+  const transportB = useMemo(() => new DefaultChatTransport({
+    api: '/api/hub/chat',
+    prepareSendMessagesRequest: ({ messages }) => ({
+      body: { messages, ...bodyRefB.current },
+    }),
+  }), []);
+
   const {
     messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    append: appendA,
+    sendMessage: sendMessageA,
+    status: statusA,
   } = useChat({
-    api: '/api/hub/chat',
     id: 'pane-a',
-    body: {
-      model: selectedModelId,
-      systemPrompt: buildSystemPrompt(selectedPersonaId, activeInjects),
-      enableWebSearch: activeSkills.includes('web-search'),
-      activeSkills,
-      activeMcps,
-    },
-    initialMessages: [{
-      id: 'welcome',
-      role: 'assistant',
-      content: 'welcome to .ktg hub. select a persona, configure your prompt injects, and begin.',
-    }],
+    transport: transportA,
+    experimental_throttle: 50,
   });
+  const isLoading = statusA === 'submitted' || statusA === 'streaming';
 
-  const { messages: messagesB, isLoading: isLoadingB, append: appendB } = useChat({
-    api: '/api/hub/chat',
+  const {
+    messages: messagesB,
+    sendMessage: sendMessageB,
+    status: statusB,
+  } = useChat({
     id: 'pane-b',
-    body: {
-      model: selectedModelIdB,
-      systemPrompt: buildSystemPrompt(selectedPersonaIdB, activeInjects),
-      enableWebSearch: activeSkills.includes('web-search'),
-      activeSkills,
-      activeMcps,
-    },
-    initialMessages: [{
-      id: 'welcome-b',
-      role: 'assistant',
-      content: 'welcome to .ktg hub. select a persona, configure your prompt injects, and begin.',
-    }],
+    transport: transportB,
+    experimental_throttle: 50,
   });
+  const isLoadingB = statusB === 'submitted' || statusB === 'streaming';
+
+  const submit = (e) => {
+    e?.preventDefault?.();
+    const text = input.trim();
+    if (!text) return;
+    sendMessageA({ role: 'user', parts: [{ type: 'text', text }] });
+    if (isDualMode) sendMessageB({ role: 'user', parts: [{ type: 'text', text }] });
+    setInput('');
+  };
+
+  // Extract plain text from a UIMessage's parts array (handles markdown rendering input).
+  const getMessageText = (msg) =>
+    msg.parts?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? msg.content ?? '';
+
+  // Renders a single pane's ScrollArea + messages. Used for both panes when dual-mode is on.
+  // panePersona: the persona object for THIS pane (icon/colors/bg).
+  // withScrollRef: only pane A pins messagesEndRef so auto-scroll tracks the active stream.
+  const renderPane = (paneMessages, paneLoading, panePersona, withScrollRef) => {
+    const PIcon = panePersona.icon;
+    return (
+      <ScrollArea className="flex-1 px-4 py-4">
+        <div className="max-w-3xl mx-auto flex flex-col gap-4 pb-40">
+          {paneMessages.map(msg => (
+            <div key={msg.id} className={cn("flex gap-3", msg.role === 'user' ? "justify-end" : "justify-start")}>
+              {msg.role === 'assistant' && (
+                <div className={cn("h-7 w-7 shrink-0 flex items-center justify-center mt-0.5", panePersona.bg)}>
+                  <PIcon className={cn("h-4 w-4", panePersona.color)} style={panePersona.customHex ? { color: panePersona.customHex } : {}} />
+                </div>
+              )}
+              <div className={cn(
+                "max-w-[80%] w-fit px-3.5 py-2.5 text-sm leading-relaxed transition-[border-color,box-shadow] duration-300",
+                msg.role === 'user'
+                  ? "border border-[#00f0ff]/25 bg-zinc-900 text-zinc-100 shadow-[0_0_16px_rgba(0,240,255,0.14),0_0_32px_rgba(0,240,255,0.06)] hover:border-[rgba(0,240,255,0.4)] hover:shadow-[0_0_22px_rgba(0,240,255,0.22),0_0_44px_rgba(0,240,255,0.1)]"
+                  : "border border-[#00f0ff]/15 bg-zinc-950 text-zinc-200 shadow-[0_0_14px_rgba(0,240,255,0.08)] hover:border-[rgba(0,240,255,0.3)] hover:shadow-[0_0_20px_rgba(0,240,255,0.12)]",
+              )}>
+                {msg.role === 'assistant' ? (
+                  <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800 prose-code:text-[#00f0ff] prose-code:bg-transparent prose-code:before:content-none prose-code:after:content-none">
+                    <Streamdown>{getMessageText(msg)}</Streamdown>
+                  </div>
+                ) : (
+                  <p className="text-sm leading-relaxed">{getMessageText(msg)}</p>
+                )}
+              </div>
+              {msg.role === 'user' && (
+                <div className="h-7 w-7 shrink-0 flex items-center justify-center bg-zinc-800 mt-0.5">
+                  <User className="h-4 w-4 text-zinc-400" />
+                </div>
+              )}
+            </div>
+          ))}
+          {paneLoading && (
+            <div className="flex gap-3">
+              <div className={cn("h-7 w-7 shrink-0 flex items-center justify-center", panePersona.bg)}>
+                <PIcon className={cn("h-4 w-4", panePersona.color)} />
+              </div>
+              <div className="flex items-center gap-1 px-4 py-3">
+                {[0, 1, 2].map(i => (
+                  <span key={i} className="h-1.5 w-1.5 bg-[#00f0ff] animate-pulse" style={{ animationDelay: `${i * 150}ms` }} />
+                ))}
+              </div>
+            </div>
+          )}
+          {withScrollRef && <div ref={messagesEndRef} />}
+        </div>
+      </ScrollArea>
+    );
+  };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
   }, [messages]);
 
   const toggleSkill = id => setActiveSkills(prev =>
@@ -339,13 +450,36 @@ export default function HubChat() {
     prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
   );
 
-  const fireMacro = macro => appendA({ role: 'user', content: macro.prompt });
+  const fireMacro = macro => sendMessageA({ role: 'user', parts: [{ type: 'text', text: macro.prompt }] });
 
   const handleSaveMacro = () => {
     if (!newMacro.name.trim() || !newMacro.prompt.trim()) return;
     setMacros(prev => [...prev, { id: 'macro-' + Date.now(), ...newMacro }]);
     setIsMacroModalOpen(false);
     setNewMacro({ name: '', iconName: 'Command', prompt: '' });
+  };
+
+  const openCreateForSlot = (slotIndex) => {
+    setActiveSlotIndex(slotIndex);
+    setNewModifier({ label: '', instruction: '' });
+    setIsModifierModalOpen(true);
+  };
+  const handleSaveModifier = () => {
+    if (!newModifier.label.trim() || !newModifier.instruction.trim()) return;
+    if (activeSlotIndex == null) return;
+    const id = 'slot-' + activeSlotIndex + '-' + Date.now();
+    setLoadoutSlots(prev => prev.map((s, i) =>
+      i === activeSlotIndex ? { id, label: newModifier.label.trim(), instruction: newModifier.instruction.trim() } : s
+    ));
+    setIsModifierModalOpen(false);
+    setActiveSlotIndex(null);
+    setNewModifier({ label: '', instruction: '' });
+  };
+  const handleClearSlot = (slotIndex, e) => {
+    e?.stopPropagation();
+    const slot = loadoutSlots[slotIndex];
+    if (slot) setActiveInjects(prev => prev.filter(i => i !== slot.id));
+    setLoadoutSlots(prev => prev.map((s, i) => i === slotIndex ? null : s));
   };
 
   const handleSavePersona = () => {
@@ -358,12 +492,12 @@ export default function HubChat() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] w-full bg-black text-zinc-50 overflow-hidden font-[family-name:var(--font-mono)] selection:bg-[#00f0ff] selection:text-black">
+    <div className="flex h-[100dvh] w-full bg-black text-zinc-50 overflow-hidden font-[family-name:var(--font-mono)] selection:bg-[#00f0ff] selection:text-black">
 
       {/* LEFT SIDEBAR */}
       <aside
         className={cn(
-          "group absolute z-20 flex h-full w-16 shrink-0 flex-col items-start overflow-hidden border-r border-zinc-800 bg-black py-4 transition-all duration-300 hover:w-56 md:relative",
+          "group absolute z-20 flex h-full w-16 shrink-0 flex-col items-start overflow-hidden border-r border-zinc-800 bg-black py-4 transition-all duration-300 hover:w-56 md:sticky md:top-0 md:h-screen md:self-start",
           CHAT_ASIDE_EDGE,
         )}
       >
@@ -381,7 +515,7 @@ export default function HubChat() {
           </div>
           <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">.ktg hub</span>
         </div>
-        <div className="flex-1 w-full flex flex-col gap-1 px-2 overflow-y-auto no-scrollbar">
+        <div className="flex-1 w-full flex flex-col gap-1 px-2 overflow-y-auto overflow-x-hidden no-scrollbar">
           {NAV_LINKS.map(link => (
             <a
               key={link.id}
@@ -425,7 +559,7 @@ export default function HubChat() {
       <div className="flex flex-col flex-1 min-w-0 ml-16 md:ml-0">
 
         {/* HEADER */}
-        <header className="flex shrink-0 items-center justify-between border-b border-zinc-800 bg-black px-4 py-3 shadow-[0_1px_0_rgba(0,240,255,0.06),0_8px_32px_-12px_rgba(0,240,255,0.05)]">
+        <header className="sticky top-0 z-30 flex shrink-0 items-center justify-between border-b border-zinc-800 bg-black px-4 py-3 shadow-[0_1px_0_rgba(0,240,255,0.06),0_8px_32px_-12px_rgba(0,240,255,0.05)]">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className={cn("h-7 w-7 flex items-center justify-center shrink-0", selectedPersona.bg)}>
@@ -544,6 +678,18 @@ export default function HubChat() {
 
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setIsDualMode(v => !v)}
+              className={cn(
+                "border p-1.5 text-zinc-500 transition-all duration-300",
+                isDualMode
+                  ? "border-[#00f0ff] bg-[rgba(0,240,255,0.12)] text-[#00f0ff] shadow-[0_0_18px_rgba(0,240,255,0.35),0_0_36px_rgba(0,240,255,0.15)]"
+                  : CHAT_ICON_BTN,
+              )}
+              title="compare two models"
+            >
+              <Columns className="h-4 w-4" />
+            </button>
+            <button
               onClick={() => setIsRightSidebarOpen(v => !v)}
               className={cn(
                 "border p-1.5 text-zinc-500 transition-all duration-300",
@@ -551,7 +697,7 @@ export default function HubChat() {
                   ? "border-[#00f0ff] bg-[rgba(0,240,255,0.12)] text-[#00f0ff] shadow-[0_0_18px_rgba(0,240,255,0.35),0_0_36px_rgba(0,240,255,0.15)]"
                   : CHAT_ICON_BTN,
               )}
-              title="macros"
+              title="active panel"
             >
               <PanelRight className="h-4 w-4" />
             </button>
@@ -568,96 +714,123 @@ export default function HubChat() {
         <div className="flex flex-1 overflow-hidden">
           {/* CHAT */}
           <div className="flex flex-col flex-1 min-w-0">
-            <ScrollArea className="flex-1 px-4 py-4">
-              <div className="max-w-3xl mx-auto space-y-6 pb-40">
-                {messages.map(msg => (
-                  <div key={msg.id} className={cn("flex gap-3", msg.role === 'user' ? "justify-end" : "justify-start")}>
-                    {msg.role === 'assistant' && (
-                      <div className={cn("h-7 w-7 shrink-0 flex items-center justify-center mt-0.5", selectedPersona.bg)}>
-                        <PersonaIcon className={cn("h-4 w-4", selectedPersona.color)} />
-                      </div>
-                    )}
-                    <div className={cn(
-                      "max-w-[80%] px-4 py-3 text-sm leading-relaxed transition-[border-color,box-shadow] duration-300",
-                      msg.role === 'user'
-                        ? "border border-zinc-800 bg-zinc-900 text-zinc-100 shadow-[0_0_16px_rgba(0,240,255,0.14),0_0_32px_rgba(0,240,255,0.06)] hover:border-[rgba(0,240,255,0.25)] hover:shadow-[0_0_22px_rgba(0,240,255,0.22),0_0_44px_rgba(0,240,255,0.1)]"
-                        : "border border-zinc-800/50 bg-zinc-950 text-zinc-200 shadow-[0_0_14px_rgba(0,240,255,0.08)] hover:border-[rgba(0,240,255,0.18)] hover:shadow-[0_0_20px_rgba(0,240,255,0.12)]",
-                    )}>
-                      {msg.role === 'assistant' ? (
-                        <div className="prose prose-invert prose-sm max-w-none prose-p:my-1 prose-pre:bg-zinc-900 prose-pre:border prose-pre:border-zinc-800 prose-code:text-[#00f0ff] prose-code:bg-transparent prose-code:before:content-none prose-code:after:content-none">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                        </div>
-                      ) : (
-                        <p className="text-sm leading-relaxed">{msg.content}</p>
-                      )}
-                    </div>
-                    {msg.role === 'user' && (
-                      <div className="h-7 w-7 shrink-0 flex items-center justify-center bg-zinc-800 mt-0.5">
-                        <User className="h-4 w-4 text-zinc-400" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-3">
-                    <div className={cn("h-7 w-7 shrink-0 flex items-center justify-center", selectedPersona.bg)}>
-                      <PersonaIcon className={cn("h-4 w-4", selectedPersona.color)} />
-                    </div>
-                    <div className="flex items-center gap-1 px-4 py-3">
-                      {[0, 1, 2].map(i => (
-                        <span
-                          key={i}
-                          className="h-1.5 w-1.5 bg-[#00f0ff] animate-pulse"
-                          style={{ animationDelay: `${i * 150}ms` }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-                <div ref={messagesEndRef} />
+            <div className="flex flex-1 overflow-hidden">
+              {/* PANE A */}
+              <div className="flex flex-col flex-1 min-w-0">
+                {renderPane(messages, isLoading, selectedPersona, true)}
               </div>
-            </ScrollArea>
+              {isDualMode && (
+                <>
+                  <div className="w-px bg-zinc-800 shadow-[1px_0_12px_rgba(0,240,255,0.06)]" />
+                  {/* PANE B */}
+                  <div className="flex flex-col flex-1 min-w-0">
+                    {/* mini header for pane B */}
+                    <div className="sticky top-0 z-20 flex shrink-0 items-center gap-3 border-b border-zinc-800 bg-black px-4 py-2 shadow-[0_1px_0_rgba(0,240,255,0.06)]">
+                      <div className={cn("h-6 w-6 flex items-center justify-center shrink-0", selectedPersonaB.bg)}>
+                        <PersonaIconB
+                          className={cn("h-3.5 w-3.5", selectedPersonaB.color)}
+                          style={selectedPersonaB.customHex ? { color: selectedPersonaB.customHex } : {}}
+                        />
+                      </div>
+                      <Select value={selectedPersonaIdB} onValueChange={setSelectedPersonaIdB}>
+                        <SelectTrigger className="h-7 w-auto gap-1 rounded-none border-zinc-800 bg-transparent pr-2 text-xs font-bold lowercase text-white font-[family-name:var(--font-syne)] hover:border-[rgba(0,240,255,0.35)] focus:ring-[#00f0ff]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-950 border-zinc-800 rounded-none">
+                          {allPersonas.map(p => {
+                            const PIcon = p.icon;
+                            return (
+                              <SelectItem key={p.id} value={p.id} className="text-xs lowercase font-[family-name:var(--font-syne)] focus:bg-zinc-800 focus:text-white cursor-pointer rounded-none">
+                                <div className="flex items-center gap-2">
+                                  <PIcon className={cn("h-3.5 w-3.5", p.color)} />
+                                  {p.name}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      <div className="w-px h-4 bg-zinc-800" />
+                      <Select value={selectedModelIdB} onValueChange={setSelectedModelIdB}>
+                        <SelectTrigger className="h-7 w-auto gap-1 rounded-none border-zinc-800 bg-transparent pr-2 text-xs lowercase text-zinc-400 font-[family-name:var(--font-syne)] hover:border-[rgba(0,240,255,0.35)] hover:text-zinc-200 focus:ring-[#00f0ff]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-zinc-950 border-zinc-800 rounded-none">
+                          {MODELS.map(m => (
+                            <SelectItem key={m.id} value={m.id} className="text-xs lowercase font-[family-name:var(--font-syne)] focus:bg-zinc-800 focus:text-white cursor-pointer rounded-none">
+                              <div className="flex items-center gap-2">
+                                {m.name}
+                                <span className="text-[10px] px-1 border border-zinc-700 text-zinc-500">{m.badge}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {renderPane(messagesB, isLoadingB, selectedPersonaB, false)}
+                  </div>
+                </>
+              )}
+            </div>
 
             {/* INPUT ZONE — floating with glow */}
             <div className="shrink-0 px-4 pb-6 pt-2 absolute bottom-0 left-0 right-0 z-10 bg-gradient-to-t from-black via-black/95 to-transparent pointer-events-none">
-              <form onSubmit={handleSubmit} className="max-w-3xl mx-auto pointer-events-auto">
+              <form onSubmit={submit} className="max-w-3xl mx-auto pointer-events-auto">
                 <div className="border border-[#00f0ff]/20 bg-zinc-950/95 backdrop-blur-sm shadow-[0_0_20px_rgba(0,240,255,0.08),0_-8px_32px_rgba(0,0,0,0.8)] transition-[border-color,box-shadow] duration-300 focus-within:border-[rgba(0,240,255,0.45)] focus-within:shadow-[0_0_32px_rgba(0,240,255,0.22),0_0_56px_rgba(0,240,255,0.12),0_-8px_32px_rgba(0,0,0,0.8)]">
 
-                  {/* TOP: inject dots */}
-                  <div className="px-3 pt-2.5 flex items-center gap-1.5 border-b border-zinc-900">
-                    {PROMPT_INJECTS.map(inject => {
-                      const isActive = activeInjects.includes(inject.id);
+                  {/* TOP: 8-slot modifier loadout — grey/red/green glowing buttons */}
+                  <div className="px-3 pt-2.5 pb-2 flex flex-wrap items-center gap-2 border-b border-zinc-900">
+                    {loadoutSlots.map((slot, idx) => {
+                      const slotNum = idx + 1;
+                      const isLoaded = !!slot;
+                      const isActive = isLoaded && activeInjects.includes(slot.id);
                       return (
-                        <button
-                          key={inject.id}
-                          type="button"
-                          onClick={() => toggleInject(inject.id)}
-                          title={inject.label}
-                          className={cn(
-                            "h-3 w-3 shrink-0 rounded-full transition-all duration-200 hover:scale-125",
-                            isActive
-                              ? "bg-[#00f0ff] shadow-[0_0_8px_#00f0ff,0_0_16px_rgba(0,240,255,0.45)]"
-                              : "bg-red-500/70 hover:bg-red-400 hover:shadow-[0_0_10px_rgba(239,68,68,0.5)]",
+                        <div key={idx} className="relative group/slot">
+                          <button
+                            type="button"
+                            onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
+                            title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
+                            className={cn(
+                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
+                              !isLoaded
+                                ? "border border-dashed border-zinc-700 bg-zinc-950 text-zinc-500 shadow-[0_0_6px_rgba(161,161,170,0.15)] hover:border-zinc-500 hover:text-zinc-300 hover:shadow-[0_0_10px_rgba(161,161,170,0.25)]"
+                                : isActive
+                                  ? "border border-emerald-400/50 bg-emerald-500/10 text-emerald-300 shadow-[0_0_10px_rgba(52,211,153,0.4),0_0_20px_rgba(52,211,153,0.15)] hover:bg-emerald-500/15"
+                                  : "border border-red-500/40 bg-red-500/5 text-red-400 shadow-[0_0_8px_rgba(239,68,68,0.25)] hover:bg-red-500/10 hover:shadow-[0_0_12px_rgba(239,68,68,0.4)]",
+                            )}
+                          >
+                            <span className={cn(
+                              "h-1.5 w-1.5 rounded-full shrink-0",
+                              !isLoaded ? "bg-zinc-600" :
+                                isActive ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]" :
+                                "bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]",
+                            )} />
+                            {isLoaded ? slot.label : slotNum}
+                          </button>
+                          {isLoaded && (
+                            <button
+                              type="button"
+                              onClick={(e) => handleClearSlot(idx, e)}
+                              className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 transition-opacity"
+                              title="clear slot"
+                            >
+                              <X className="h-2.5 w-2.5" />
+                            </button>
                           )}
-                        />
+                        </div>
                       );
                     })}
-                    <span className="text-[10px] text-zinc-600 font-[family-name:var(--font-syne)] lowercase ml-1 whitespace-nowrap pb-0.5">
-                      {activeInjects.length > 0
-                        ? PROMPT_INJECTS.filter(i => activeInjects.includes(i.id)).map(i => i.label).join(' · ')
-                        : 'no modifiers'}
-                    </span>
                   </div>
 
                   {/* MIDDLE: textarea */}
                   <div className="px-3 py-2.5">
                     <textarea
                       value={input}
-                      onChange={handleInputChange}
+                      onChange={(e) => setInput(e.target.value)}
                       onKeyDown={e => {
                         if (e.key === 'Enter' && !e.shiftKey) {
                           e.preventDefault();
-                          handleSubmit(e);
+                          submit(e);
                         }
                       }}
                       placeholder="explore something new..."
@@ -712,7 +885,7 @@ export default function HubChat() {
           {isRightSidebarOpen && (
             <aside className="flex w-52 shrink-0 flex-col border-l border-[rgba(0,240,255,0.12)] bg-black shadow-[-10px_0_40px_-12px_rgba(0,240,255,0.14)] transition-[border-color,box-shadow] duration-300">
               <div className="flex items-center justify-between border-b border-zinc-800 px-3 py-2.5 shadow-[0_8px_24px_-12px_rgba(0,240,255,0.08)]">
-                <span className="text-[11px] font-bold lowercase text-white font-[family-name:var(--font-syne)]">connections</span>
+                <span className="text-xs font-bold lowercase text-white font-[family-name:var(--font-syne)]">active</span>
                 <button
                   onClick={() => setIsRightSidebarOpen(false)}
                   className="text-zinc-500 transition-all duration-300 hover:text-[#00f0ff] hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]"
@@ -722,73 +895,51 @@ export default function HubChat() {
               </div>
 
               <ScrollArea className="flex-1">
-                <div className="px-2 py-2 space-y-3">
-                  {/* MCP Servers — switches (parity with Settings) */}
+                <div className="px-2 py-2 flex flex-col gap-3">
+                  {/* Active skills — fire-buttons (toggles live in settings) */}
                   <div>
-                    <h3 className="text-[9px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600 px-1 mb-1">mcp</h3>
-                    <div className="space-y-0">
-                      {MCP_SERVERS.map(mcp => {
-                        const isActive = activeMcps.includes(mcp.id);
-                        return (
-                          <div
-                            key={mcp.id}
-                            className="flex items-center justify-between gap-2 px-1 py-1.5 border-b border-zinc-900/60"
-                          >
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <div className={cn("h-1.5 w-1.5 rounded-full shrink-0", isActive ? "bg-green-500" : "bg-red-500/60")} />
-                              <span className={cn("text-[11px] lowercase truncate", isActive ? "text-zinc-200" : "text-zinc-500")}>{mcp.name}</span>
-                            </div>
-                            <Switch
-                              checked={isActive}
-                              onCheckedChange={(on) => setActiveMcps(prev =>
-                                on
-                                  ? (prev.includes(mcp.id) ? prev : [...prev, mcp.id])
-                                  : prev.filter(m => m !== mcp.id)
-                              )}
-                              className="data-[state=checked]:bg-green-500 rounded-none shrink-0 scale-90 origin-right"
-                              aria-label={`toggle ${mcp.name}`}
-                            />
-                          </div>
-                        );
-                      })}
+                    <h3 className="text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600 px-1 mb-1">skills</h3>
+                    <div className="flex flex-col gap-0">
+                      {SKILLS.filter(s => activeSkills.includes(s.id)).map(skill => (
+                        <button
+                          key={skill.id}
+                          onClick={() => setInput(skill.template)}
+                          className="group flex w-full items-center gap-2 border border-transparent px-1 py-1.5 text-left transition-all duration-300 hover:border-[rgba(0,240,255,0.2)] hover:bg-[rgba(0,240,255,0.06)] hover:shadow-[0_0_12px_rgba(0,240,255,0.12)]"
+                          title={`prefill: ${skill.template}…`}
+                        >
+                          <skill.icon className="h-3 w-3 text-[#00f0ff] shrink-0" />
+                          <span className="text-xs lowercase text-zinc-300 group-hover:text-white truncate">{skill.name}</span>
+                        </button>
+                      ))}
+                      {activeSkills.length === 0 && (
+                        <p className="text-[10px] text-zinc-600 px-1 py-2 lowercase">none active · enable in settings</p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Skills — switches (parity with Settings) */}
+                  {/* Active MCPs — status only (no client-side fire action yet) */}
                   <div>
-                    <h3 className="text-[9px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600 px-1 mb-1">skills</h3>
-                    <div className="space-y-0">
-                      {SKILLS.map(skill => {
-                        const isActive = activeSkills.includes(skill.id);
-                        return (
-                          <div
-                            key={skill.id}
-                            className="flex items-center justify-between gap-2 px-1 py-1.5 border-b border-zinc-900/60"
-                          >
-                            <div className="flex items-center gap-2 min-w-0 flex-1">
-                              <skill.icon className={cn("h-3 w-3 shrink-0", isActive ? "text-[#00f0ff]" : "text-zinc-600")} />
-                              <span className={cn("text-[11px] lowercase truncate", isActive ? "text-zinc-200" : "text-zinc-500")}>{skill.name}</span>
-                            </div>
-                            <Switch
-                              checked={isActive}
-                              onCheckedChange={(on) => setActiveSkills(prev =>
-                                on
-                                  ? (prev.includes(skill.id) ? prev : [...prev, skill.id])
-                                  : prev.filter(s => s !== skill.id)
-                              )}
-                              className="data-[state=checked]:bg-[#00f0ff] rounded-none shrink-0 scale-90 origin-right"
-                              aria-label={`toggle ${skill.name}`}
-                            />
-                          </div>
-                        );
-                      })}
+                    <h3 className="text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600 px-1 mb-1">mcp</h3>
+                    <div className="flex flex-wrap gap-1 px-1">
+                      {MCP_SERVERS.filter(m => activeMcps.includes(m.id)).map(mcp => (
+                        <span
+                          key={mcp.id}
+                          className="inline-flex items-center gap-1.5 border border-emerald-500/30 bg-emerald-500/5 px-1.5 py-0.5 text-[10px] lowercase text-emerald-300"
+                        >
+                          <span className="h-1 w-1 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(52,211,153,0.6)]" />
+                          {mcp.name}
+                        </span>
+                      ))}
+                      {activeMcps.length === 0 && (
+                        <p className="text-[10px] text-zinc-600 py-1 lowercase">none active</p>
+                      )}
                     </div>
                   </div>
 
                   {/* Macros */}
                   <div>
                     <div className="flex items-center justify-between px-1 mb-1">
-                      <h3 className="text-[9px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600">macros</h3>
+                      <h3 className="text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600">macros</h3>
                       <button
                         onClick={() => setIsMacroModalOpen(true)}
                         className="h-4 w-4 flex items-center justify-center text-zinc-600 hover:text-[#00f0ff] transition-colors"
@@ -806,7 +957,7 @@ export default function HubChat() {
                               className="flex w-full items-center gap-2 border border-transparent px-1 py-1.5 text-left transition-all duration-300 hover:border-[rgba(0,240,255,0.2)] hover:bg-[rgba(0,240,255,0.06)] hover:shadow-[0_0_12px_rgba(0,240,255,0.12)]"
                             >
                               <Icon className="h-3 w-3 text-zinc-600 group-hover:text-[#00f0ff] shrink-0" />
-                              <span className="text-[11px] lowercase text-zinc-400 group-hover:text-white truncate">{macro.name}</span>
+                              <span className="text-xs lowercase text-zinc-400 group-hover:text-white truncate">{macro.name}</span>
                             </button>
                             <button
                               onClick={e => { e.stopPropagation(); setMacros(prev => prev.filter(m => m.id !== macro.id)); }}
@@ -838,22 +989,21 @@ export default function HubChat() {
           <div className="flex flex-col gap-4 mt-2 max-h-[65vh] overflow-y-auto pr-1">
             <div>
               <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">name</label>
-              <input
-                type="text"
+              <Input
                 value={newPersona.name}
                 onChange={e => setNewPersona(p => ({ ...p, name: e.target.value }))}
                 placeholder="persona name..."
-                className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-[#00f0ff] rounded-none placeholder:text-zinc-600"
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff]"
               />
             </div>
             <div>
               <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">system prompt</label>
-              <textarea
+              <Textarea
                 value={newPersona.prompt}
                 onChange={e => setNewPersona(p => ({ ...p, prompt: e.target.value }))}
                 placeholder="you are..."
                 rows={10}
-                className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-[#00f0ff] rounded-none resize-none overflow-y-auto placeholder:text-zinc-600"
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff] resize-none"
               />
             </div>
             <div>
@@ -900,22 +1050,21 @@ export default function HubChat() {
           <div className="flex flex-col gap-4 mt-2">
             <div>
               <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">name</label>
-              <input
-                type="text"
+              <Input
                 value={newMacro.name}
                 onChange={e => setNewMacro(m => ({ ...m, name: e.target.value }))}
                 placeholder="macro name..."
-                className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-[#00f0ff] rounded-none placeholder:text-zinc-600"
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff]"
               />
             </div>
             <div>
               <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">prompt</label>
-              <textarea
+              <Textarea
                 value={newMacro.prompt}
                 onChange={e => setNewMacro(m => ({ ...m, prompt: e.target.value }))}
                 placeholder="what this macro sends..."
                 rows={3}
-                className="w-full bg-zinc-900 border border-zinc-800 px-3 py-2 text-sm text-zinc-100 focus:outline-none focus:border-[#00f0ff] rounded-none resize-none placeholder:text-zinc-600"
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff] resize-none"
               />
             </div>
             <div>
@@ -925,6 +1074,45 @@ export default function HubChat() {
             <div className="flex gap-2 pt-2">
               <Button variant="outline" onClick={() => setIsMacroModalOpen(false)} className="flex-1 rounded-none border-zinc-800 lowercase font-[family-name:var(--font-syne)]">cancel</Button>
               <Button onClick={handleSaveMacro} className="flex-1 rounded-none bg-[#00f0ff] text-black hover:bg-[#00f0ff]/80 lowercase font-[family-name:var(--font-syne)]">save macro</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* MODIFIER MODAL — create a modifier for a specific slot */}
+      <Dialog open={isModifierModalOpen} onOpenChange={(open) => {
+        setIsModifierModalOpen(open);
+        if (!open) { setActiveSlotIndex(null); setNewModifier({ label: '', instruction: '' }); }
+      }}>
+        <DialogContent className="max-w-md rounded-none border-[rgba(0,240,255,0.18)] bg-zinc-950/80 shadow-[0_0_40px_rgba(0,240,255,0.12),0_0_80px_rgba(0,240,255,0.06)] backdrop-blur-sm">
+          <DialogHeader>
+            <DialogTitle className="font-[family-name:var(--font-syne)] lowercase text-white">
+              {activeSlotIndex != null ? `new modifier · slot ${activeSlotIndex + 1}` : 'new modifier'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 mt-2">
+            <div>
+              <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">label</label>
+              <Input
+                value={newModifier.label}
+                onChange={e => setNewModifier(m => ({ ...m, label: e.target.value }))}
+                placeholder="short pill text, e.g. 'aussie tone'..."
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff]"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-zinc-500 font-[family-name:var(--font-syne)] lowercase mb-1.5 block">instruction</label>
+              <Textarea
+                value={newModifier.instruction}
+                onChange={e => setNewModifier(m => ({ ...m, instruction: e.target.value }))}
+                placeholder="what to inject into the system prompt when this is on..."
+                rows={4}
+                className="bg-zinc-900 border-zinc-800 rounded-none text-zinc-100 placeholder:text-zinc-600 focus-visible:ring-0 focus-visible:border-[#00f0ff] resize-none"
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button variant="outline" onClick={() => setIsModifierModalOpen(false)} className="flex-1 rounded-none border-zinc-800 lowercase font-[family-name:var(--font-syne)]">cancel</Button>
+              <Button onClick={handleSaveModifier} className="flex-1 rounded-none bg-[#00f0ff] text-black hover:bg-[#00f0ff]/80 lowercase font-[family-name:var(--font-syne)]">save</Button>
             </div>
           </div>
         </DialogContent>
