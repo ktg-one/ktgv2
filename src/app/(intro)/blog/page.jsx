@@ -82,9 +82,10 @@ export default async function BlogPage() {
           {/* Posts List */}
           {posts.length === 0 ? (
             <div className="py-20 text-center border border-dashed border-white/10 rounded-2xl">
-              <p className="text-white/40 mb-2">No posts found.</p>
-              <p className="text-white/30 text-sm">
-                System awaiting input from WordPress...
+              <p className="font-mono text-white/20 text-xs tracking-widest mb-3">signal lost</p>
+              <p className="text-white/40 mb-2">cms unreachable.</p>
+              <p className="text-white/20 text-sm font-mono">
+                check back soon — transmissions resume when the server wakes up.
               </p>
             </div>
           ) : (
@@ -95,9 +96,12 @@ export default async function BlogPage() {
                 const featuredImage = getFeaturedImage(post);
                 const title = post.title?.rendered || post.title || 'Untitled';
                 // Strip HTML tags for the preview text
-                const excerpt = (post.excerpt?.rendered || post.excerpt || '')
+                const rawExcerpt = (post.excerpt?.rendered || post.excerpt || '')
                   .replace(/<[^>]*>/g, "")
-                  .substring(0, 150) + "...";
+                  .trim();
+                const excerpt = rawExcerpt.length > 150
+                  ? rawExcerpt.substring(0, 150) + "..."
+                  : rawExcerpt;
 
                 return (
                   <article

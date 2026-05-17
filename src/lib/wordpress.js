@@ -46,7 +46,7 @@ export async function getPosts(page = 1, perPage = 10) {
   try {
     const url = `${WORDPRESS_URL}/wp-json/wp/v2/posts?_embed&per_page=${perPage}&page=${page}`;
     
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       next: { revalidate: 60 }, // ISR: Revalidate every 60 seconds for dynamic pages
       headers: {
         'User-Agent': 'Next.js WordPress Client',
@@ -111,7 +111,7 @@ export async function getPostBySlug(slug) {
   try {
     const url = `${WORDPRESS_URL}/wp-json/wp/v2/posts?slug=${slug}&_embed`;
     
-    const response = await fetch(url, {
+    const response = await fetchWithTimeout(url, {
       next: { revalidate: 60 }, // ISR: Revalidate every 60 seconds for dynamic pages
       headers: {
         'User-Agent': 'Next.js WordPress Client',
