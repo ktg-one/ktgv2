@@ -50,7 +50,7 @@ export function BlogPreview({ posts = [] }) {
       <section ref={sectionRef} data-blog-section className="relative py-24 px-6 text-white z-[60]" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto w-full">
           <h2 className="font-syne text-4xl md:text-5xl font-bold mb-6 lowercase">blog</h2>
-          <p className="text-muted-foreground">No posts available at the moment.</p>
+          <p className="text-white/30 font-mono text-sm">signal lost — cms offline.</p>
         </div>
       </section>
     );
