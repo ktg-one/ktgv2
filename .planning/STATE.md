@@ -101,7 +101,13 @@ Hub chat todos (from progress.md):
 
 ## Session Continuity
 
-**Last session:** 2026-04-01 — planning pass (roadmapper, plan-checker); hub remains Phase 6 (live verify)
-**Stopped at:** Hub Phase 6 — API keys + smoke checklist; marketing Phase 1 plan **01-02** still has open QA tasks
+**Last session:** 2026-06-14 — KTG Hub Verifier (Step 1)
+**Stopped at:** Hub Step 1 complete — React bump + lockfile; PR #3 open; Vercel green.
 **Resume file:** None
 **Context source:** `.planning/ROADMAP.md` Progress + Hub table; `01-02-PLAN.md` for shell/motion QA
+
+## Quick Tasks Completed
+
+| Date | Task | Outcome |
+|------|------|---------|
+| 2026-06-14 | Step 1 — unblock deploy gate (react 19.2.1 bump + lockfile regen) | Complete ✓ (PR #3, Vercel green) |
