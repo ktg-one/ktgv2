@@ -123,14 +123,14 @@ const MODELS = MODEL_FAMILIES.flatMap(f => f.models);
 const NAV_LINKS = [
   { id: 'chat', label: 'chat', icon: MessageSquare, href: '/hub/chat' },
   { id: 'snippets', label: 'snippets', icon: FileText, href: '/hub/snippets' },
-  { id: 'prompt-forge', label: 'prompt forge', icon: Wrench, href: '#' },
-  { id: 'workflow', label: 'workflow studio', icon: Network, href: '#' },
-  { id: 'embed-chain', label: 'embed chain', icon: LinkIcon, href: '#' },
-  { id: 'platforms', label: 'platforms', icon: Globe, href: '#' },
-  { id: 'google-universe', label: 'google universe', icon: Atom, href: '#' },
-  { id: 'newsroom', label: 'newsroom', icon: Newspaper, href: '#' },
-  { id: 'orchestration', label: 'orchestration', icon: Command, href: '#' },
-  { id: 'content-hub', label: 'content hub', icon: PenTool, href: '#' },
+  { id: 'prompt-forge', label: 'prompt forge', icon: Wrench, href: '/hub/#prompt-forge' },
+  { id: 'workflow', label: 'workflow studio', icon: Network, href: '/hub/#workflow' },
+  { id: 'embed-chain', label: 'embed chain', icon: LinkIcon, href: '/hub/#embed-chain' },
+  { id: 'platforms', label: 'platforms', icon: Globe, href: '/hub/#platforms' },
+  { id: 'google-universe', label: 'google universe', icon: Atom, href: '/hub/#google-universe' },
+  { id: 'newsroom', label: 'newsroom', icon: Newspaper, href: '/hub/#newsroom' },
+  { id: 'orchestration', label: 'orchestration', icon: Command, href: '/hub/#orchestration' },
+  { id: 'content-hub', label: 'content hub', icon: PenTool, href: '/hub/#content-hub' },
 ];
 
 /** Cyan edge glow / hover — parity with DockNav */

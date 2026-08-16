@@ -26,7 +26,7 @@ const NAV_ITEMS = [
   { href: "/expertise", icon: GraduationCap, label: "Expertise" },
   { href: "/validation", icon: BadgeCheck, label: "Validation" },
   { href: "/blog", icon: Newspaper, label: "Insights" },
-  { href: "/hub/snippets", icon: Box, label: "Hub" },
+  { href: "/hub", icon: Box, label: "Hub" },
   { href: "/hub/chat", icon: MessageSquare, label: "Chat" },
   { href: "/#contact", icon: Mail, label: "Contact" },
 ];
