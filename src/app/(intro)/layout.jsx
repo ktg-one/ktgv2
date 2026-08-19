@@ -1,18 +1,22 @@
 import { ClientLayout } from "@/components/ClientLayout";
 import { GeometricBackground } from "@/components/GeometricBackground";
+import { Navbar } from "@/components/goodai/Navbar";
+import { Footer } from "@/components/goodai/Footer";
 import { CursorDot } from "@/components/CursorDot";
 import { DockNav } from "@/components/DockNav";
 
-// Heavy intro-site shell: Lenis smooth-scroll, GeometricBackground WebGL,
-// DockNav, CursorDot. Wraps marketing/landing routes only.
-// Hub routes (`/hub/*`) deliberately do NOT inherit this — they have their
-// own UI and need native scroll for ScrollArea components.
 export default function IntroLayout({ children }) {
   return (
     <ClientLayout>
       <GeometricBackground fixed />
+      <Navbar />
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <main className="grow">
+          {children}
+        </main>
+        <Footer />
+      </div>
       <DockNav />
-      {children}
       <CursorDot />
     </ClientLayout>
   );

@@ -5,12 +5,11 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState, Fragment } from "react";
 import {
   Home,
-  Newspaper,
-  Box,
+  Layers,
+  ShieldCheck,
+  Briefcase,
   Mail,
-  MessageSquare,
-  GraduationCap,
-  BadgeCheck,
+  Box,
 } from "lucide-react";
 import {
   Tooltip,
@@ -23,12 +22,11 @@ import { cn } from "@/lib/utils";
 /** Every primary App Router page — dock is global in `layout.jsx` (all routes). */
 const NAV_ITEMS = [
   { href: "/", icon: Home, label: "Home" },
-  { href: "/expertise", icon: GraduationCap, label: "Expertise" },
-  { href: "/validation", icon: BadgeCheck, label: "Validation" },
-  { href: "/blog", icon: Newspaper, label: "Insights" },
+  { href: "/services", icon: Layers, label: "Services" },
+  { href: "/about", icon: ShieldCheck, label: "About" },
+  { href: "/case-studies", icon: Briefcase, label: "Case Studies" },
+  { href: "/contact", icon: Mail, label: "Contact" },
   { href: "/hub", icon: Box, label: "Hub" },
-  { href: "/hub/chat", icon: MessageSquare, label: "Chat" },
-  { href: "/#contact", icon: Mail, label: "Contact" },
 ];
 
 export function DockNav() {

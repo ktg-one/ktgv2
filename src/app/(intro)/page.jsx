@@ -1,51 +1,54 @@
-import { HeroSection } from "@/components/HeroSection";
-import { HeroTransition } from "@/components/HeroTransition";
-import { ExpertiseSection } from "@/components/ExpertiseSection";
-import { ExpertiseTransition } from "@/components/ExpertiseTransition";
-import { PhilosophySection } from "@/components/PhilosophySection";
-import { Footer } from "@/components/Footer";
-import { ValidationSection } from "@/components/ValidationSection";
-import { BlogPreview } from "@/components/BlogPreview";
-import { GeometricBackground } from "@/components/GeometricBackground";
-import { getPosts } from "@/lib/wordpress";
+import { Hero } from "@/components/goodai/Hero";
+import { TrustBar } from "@/components/goodai/TrustBar";
+import { Problem } from "@/components/goodai/Problem";
+import { Benefits } from "@/components/goodai/Benefits";
+import { HowItWorks } from "@/components/goodai/HowItWorks";
+import { PricingSnapshot } from "@/components/goodai/PricingSnapshot";
+import { ClientProof } from "@/components/goodai/ClientProof";
+import { CTA } from "@/components/goodai/CTA";
 
-export default async function Home() {
-  const posts = await getPosts(1, 3).catch(() => []);
+export const metadata = {
+  title: "Good'ai — Business automations, sorted.",
+  description: "We build the boring stuff so your week gets shorter. Fixed-price automation, voice agents and clear terms, built in Perth and delivered online.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Good'ai — Business automations, sorted.",
+    description: "We build the boring stuff so your week gets shorter. Fixed-price automation, voice agents and clear terms, built in Perth and delivered online.",
+    url: "https://goodai.au",
+    siteName: "Good'ai Australia",
+    locale: "en_AU",
+    type: "website",
+  },
+};
 
+export default function HomePage() {
   return (
-    <div className="bg-background min-h-screen flex flex-col relative" suppressHydrationWarning>
-      {/* Global background with gradient glow and grid - reactive to cursor */}
-      <GeometricBackground fixed />
+    <div className="flex flex-col min-h-screen bg-[#070B14] text-white">
+      {/* 1. Hero Section */}
+      <Hero />
 
-      <main className="grow" suppressHydrationWarning>
+      {/* 2. Trust Bar & Proof Badges */}
+      <TrustBar />
 
-        {/* HERO: Black Background with blob reveal cursor */}
-        <HeroSection />
+      {/* 3. Problem: "You didn't start a business to do admin" */}
+      <Problem />
 
-        {/* TRANSITION: Wipe from hero to geometric background */}
-        <HeroTransition />
+      {/* 4. Three Pillars: Sales, Operations, Data */}
+      <Benefits />
 
-        {/* EXPERTISE: White Background (Scrolls over geometric bg) */}
-        <div id="main-content">
-          <ExpertiseSection />
-        </div>
+      {/* 5. How It Works: 4 Steps */}
+      <HowItWorks />
 
-        {/* TRANSITION: Wipe from expertise (white) to validation (black) */}
-        <ExpertiseTransition />
+      {/* 6. Pricing Snapshot */}
+      <PricingSnapshot />
 
-        {/* VALIDATION: Black Background (Horizontal Scroll) */}
-        <ValidationSection />
+      {/* 7. Client Proof Overview */}
+      <ClientProof />
 
-        {/* PHILOSOPHY: Black Background (Parallax Quotes) */}
-        <PhilosophySection />
-
-        {/* BLOG: 3-tile preview of most recent posts */}
-        <BlogPreview posts={posts} />
-
-      </main>
-
-      {/* FOOTER */}
-      <Footer />
+      {/* 8. Final CTA */}
+      <CTA />
     </div>
   );
 }
