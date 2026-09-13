@@ -67,10 +67,11 @@ export function SkipButton() {
     <button
       ref={buttonRef}
       onClick={handleSkip}
-      className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors border border-white/10 hover:border-white/30 rounded-full bg-black/20 backdrop-blur-sm opacity-0"
+      aria-label="Skip introduction animation"
+      className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors border border-white/10 hover:border-white/30 rounded-full bg-black/20 backdrop-blur-sm opacity-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
     >
       <span>Skip Intro</span>
-      <ArrowDown className="w-3 h-3" />
+      <ArrowDown className="w-3 h-3" aria-hidden="true" />
     </button>
   );
 }
