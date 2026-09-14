@@ -55,7 +55,7 @@ export function DockNav() {
 
   const itemClass = (active) =>
     cn(
-      "flex size-10 items-center justify-center rounded-full border border-transparent transition-all duration-300 ease-out will-change-[box-shadow,transform]",
+      "flex size-10 items-center justify-center rounded-full border border-transparent transition-all duration-300 ease-out will-change-[box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black",
       active
         ? "border-[rgba(0,240,255,0.32)] bg-[rgba(0,240,255,0.14)] text-[#00f0ff] shadow-[0_0_14px_rgba(0,240,255,0.38),0_0_32px_rgba(0,240,255,0.16)]"
         : cn(
