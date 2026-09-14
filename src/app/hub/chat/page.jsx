@@ -656,9 +656,10 @@ export default function HubChat() {
                           </SelectItem>
                           <button
                             onClick={e => { e.stopPropagation(); deletePreset(p.id); }}
+                            aria-label={`Delete preset ${p.name}`}
                             className="absolute right-1 p-1 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-3 w-3" aria-hidden="true" />
                           </button>
                         </div>
                       ))}
@@ -669,8 +670,9 @@ export default function HubChat() {
                   onClick={() => setIsSavingPreset(true)}
                   className={cn("p-1.5 text-zinc-500", CHAT_ICON_BTN)}
                   title="save preset"
+                  aria-label="Save preset"
                 >
-                  <Bookmark className="h-4 w-4" />
+                  <Bookmark className="h-4 w-4" aria-hidden="true" />
                 </button>
               </>
             )}
@@ -686,8 +688,9 @@ export default function HubChat() {
                   : CHAT_ICON_BTN,
               )}
               title="compare two models"
+              aria-label="Compare two models"
             >
-              <Columns className="h-4 w-4" />
+              <Columns className="h-4 w-4" aria-hidden="true" />
             </button>
             <button
               onClick={() => setIsRightSidebarOpen(v => !v)}
@@ -698,15 +701,17 @@ export default function HubChat() {
                   : CHAT_ICON_BTN,
               )}
               title="active panel"
+              aria-label="Toggle active panel sidebar"
             >
-              <PanelRight className="h-4 w-4" />
+              <PanelRight className="h-4 w-4" aria-hidden="true" />
             </button>
             <button
               onClick={() => setIsSettingsOpen(true)}
               className={cn("p-1.5 text-zinc-500", CHAT_ICON_BTN)}
               title="settings"
+              aria-label="Open settings"
             >
-              <Settings className="h-4 w-4" />
+              <Settings className="h-4 w-4" aria-hidden="true" />
             </button>
           </div>
         </header>
@@ -813,8 +818,9 @@ export default function HubChat() {
                               onClick={(e) => handleClearSlot(idx, e)}
                               className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 transition-opacity"
                               title="clear slot"
+                              aria-label={`Clear modifier slot ${slotNum}`}
                             >
-                              <X className="h-2.5 w-2.5" />
+                              <X className="h-2.5 w-2.5" aria-hidden="true" />
                             </button>
                           )}
                         </div>
@@ -847,31 +853,35 @@ export default function HubChat() {
                         type="button"
                         className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
                         title="upload file"
+                        aria-label="Upload file"
                       >
-                        <Paperclip className="h-4 w-4" />
+                        <Paperclip className="h-4 w-4" aria-hidden="true" />
                       </button>
                       <button
                         type="button"
                         className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
                         title="connect to drive"
+                        aria-label="Connect to Drive"
                       >
-                        <Database className="h-4 w-4" />
+                        <Database className="h-4 w-4" aria-hidden="true" />
                       </button>
                       <button
                         type="button"
                         className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
                         title="share"
+                        aria-label="Share chat"
                       >
-                        <Share2 className="h-4 w-4" />
+                        <Share2 className="h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
                     <div className="pt-2">
                       <Button
                         type="submit"
                         disabled={isLoading || !(input || '').trim()}
+                        aria-label="Send message"
                         className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] disabled:opacity-40 disabled:hover:shadow-none"
                       >
-                        <Send className="h-3.5 w-3.5" />
+                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
                       </Button>
                     </div>
                   </div>
@@ -888,9 +898,10 @@ export default function HubChat() {
                 <span className="text-xs font-bold lowercase text-white font-[family-name:var(--font-syne)]">active</span>
                 <button
                   onClick={() => setIsRightSidebarOpen(false)}
+                  aria-label="Close active panel"
                   className="text-zinc-500 transition-all duration-300 hover:text-[#00f0ff] hover:drop-shadow-[0_0_8px_rgba(0,240,255,0.6)]"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
 
@@ -942,9 +953,10 @@ export default function HubChat() {
                       <h3 className="text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase tracking-widest text-zinc-600">macros</h3>
                       <button
                         onClick={() => setIsMacroModalOpen(true)}
+                        aria-label="Add macro"
                         className="h-4 w-4 flex items-center justify-center text-zinc-600 hover:text-[#00f0ff] transition-colors"
                       >
-                        <Plus className="h-3 w-3" />
+                        <Plus className="h-3 w-3" aria-hidden="true" />
                       </button>
                     </div>
                     <div className="space-y-0">
@@ -961,9 +973,10 @@ export default function HubChat() {
                             </button>
                             <button
                               onClick={e => { e.stopPropagation(); setMacros(prev => prev.filter(m => m.id !== macro.id)); }}
+                              aria-label={`Delete macro ${macro.name}`}
                               className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <Trash2 className="h-2.5 w-2.5" />
+                              <Trash2 className="h-2.5 w-2.5" aria-hidden="true" />
                             </button>
                           </div>
                         );
