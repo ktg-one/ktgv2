@@ -33,10 +33,21 @@ export function CursorDot() {
 
     // 3. The Animation Loop (Using requestAnimationFrame for better sync with browser)
     const render = () => {
+      // Optimization: track whether any dot actually moved significantly in this frame
+      // to avoid redundant gsap.set DOM style mutations when stationary.
+      let hasSignificantMovement = false
+      const MOVEMENT_THRESHOLD = 0.05 // pixels
+
       // Calculate position for the first dot (Leader)
-      // Increased lerp speed (0.8 → 0.95) for much tighter sync with mouse
-      dots[0].x += (mouse.x - dots[0].x) * 0.95
-      dots[0].y += (mouse.y - dots[0].y) * 0.95
+      const targetLeaderX = dots[0].x + (mouse.x - dots[0].x) * 0.95
+      const targetLeaderY = dots[0].y + (mouse.y - dots[0].y) * 0.95
+
+      if (Math.abs(targetLeaderX - dots[0].x) > MOVEMENT_THRESHOLD || Math.abs(targetLeaderY - dots[0].y) > MOVEMENT_THRESHOLD) {
+        hasSignificantMovement = true
+      }
+
+      dots[0].x = targetLeaderX
+      dots[0].y = targetLeaderY
 
       // Move the Leader Dot immediately
       if (dotsRef.current[0]) {
@@ -53,9 +64,15 @@ export function CursorDot() {
         const prev = dots[i - 1]
         const curr = dots[i]
         
-        // Follow the previous dot with lag
-        curr.x += (prev.x - curr.x) * LAG_FACTOR
-        curr.y += (prev.y - curr.y) * LAG_FACTOR
+        const nextX = curr.x + (prev.x - curr.x) * LAG_FACTOR
+        const nextY = curr.y + (prev.y - curr.y) * LAG_FACTOR
+
+        if (Math.abs(nextX - curr.x) > MOVEMENT_THRESHOLD || Math.abs(nextY - curr.y) > MOVEMENT_THRESHOLD) {
+          hasSignificantMovement = true
+        }
+
+        curr.x = nextX
+        curr.y = nextY
 
         // Apply movement immediately
         if (dotsRef.current[i]) {
@@ -68,8 +85,8 @@ export function CursorDot() {
         }
       }
       
-      // Continue animation loop
-      if (isMoving) {
+      // Continue animation loop only if moving or trail is still settling
+      if (isMoving || hasSignificantMovement) {
         rafId = requestAnimationFrame(render)
       }
     }
