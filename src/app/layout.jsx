@@ -1,7 +1,20 @@
-import { Syne, Inter } from "next/font/google";
+import { Fraunces, Ubuntu, Inter, Syne } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const ubuntu = Ubuntu({
+  weight: ["400", "500", "700"],
+  subsets: ["latin"],
+  variable: "--font-ubuntu",
+  display: "swap",
+});
 
 const syne = Syne({
   weight: ["400", "700", "800"],
@@ -28,28 +41,28 @@ const iosevka = localFont({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://ktg.one'), 
+  metadataBase: new URL('https://goodai.au'), 
   title: {
-    default: ".ktg | AI Whisperer",
-    template: "%s | .ktg"
+    default: "Good'ai — Business automations, sorted.",
+    template: "%s | Good'ai"
   },
-  description: "Portfolio of a top 0.01% prompt engineer. Cognitive Software Engineering & Cross-world reasoning across 7 careers.",
+  description: "We build the boring stuff so your week gets shorter. Fixed-price automation, voice agents and clear terms, built in Perth and delivered online.",
   icons: {
     icon: "/assets/ktg.svg",
     shortcut: "/assets/ktg.svg",
   },
   openGraph: {
-    title: ".ktg | Top 0.01% Prompt Engineer",
-    description: "Context continuation solve. Frameworks. Arxiv-ready papers.",
+    title: "Good'ai — Business automations, sorted.",
+    description: "We build the boring stuff so your week gets shorter. Fixed-price automation, voice agents and clear terms, built in Perth and delivered online.",
     type: "website",
     locale: "en_AU",
-    siteName: ".ktg Portfolio",
+    siteName: "Good'ai Australia",
     images: [
       {
         url: "/assets/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "ktg Portfolio Preview",
+        alt: "Good'ai Preview",
       },
     ],
   },
@@ -67,7 +80,7 @@ export default function RootLayout({ children }) {
       <head>
       </head>
       <body
-        className={`${syne.variable} ${inter.variable} ${iosevka.variable} antialiased text-foreground overflow-x-hidden selection:bg-white selection:text-black relative`}
+        className={`${fraunces.variable} ${ubuntu.variable} ${syne.variable} ${inter.variable} ${iosevka.variable} antialiased text-foreground overflow-x-hidden selection:bg-[#F3A62A] selection:text-[#111111] relative font-sans`}
         suppressHydrationWarning
       >
         {children}

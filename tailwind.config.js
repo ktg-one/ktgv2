@@ -41,6 +41,17 @@ module.exports = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        brand: {
+          navy: "#202C59",
+          paper: "#FFF0D0",
+          gold: "#F3A62A",
+          red: "#F4442E",
+          ink: "#111111",
+          dark: "#0A0F1D",
+          card: "#12192C",
+          border: "#1E2942",
+          subtle: "#8E9AB4",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -48,6 +59,8 @@ module.exports = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
+        fraunces: ["var(--font-fraunces)", "Georgia", "serif"],
+        ubuntu: ["var(--font-ubuntu)", "ui-sans-serif", "system-ui", "sans-serif"],
         syne: ["var(--font-syne)", "sans-serif"],
         inter: ["var(--font-inter)", "sans-serif"],
       },

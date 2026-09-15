@@ -5,9 +5,21 @@
   CRITICAL: We must use hsl(var(--variable)) to map the shadcn raw channels.
 */
 @theme {
+  --font-fraunces: var(--font-fraunces), Georgia, serif;
+  --font-ubuntu: var(--font-ubuntu), ui-sans-serif, system-ui, sans-serif;
   --font-syne: var(--font-syne);
   --font-inter: var(--font-inter);
   --font-sans: var(--font-inter);
+
+  --color-brand-navy: #202C59;
+  --color-brand-paper: #FFF0D0;
+  --color-brand-gold: #F3A62A;
+  --color-brand-red: #F4442E;
+  --color-brand-ink: #111111;
+  --color-brand-dark: #0A0F1D;
+  --color-brand-card: #12192C;
+  --color-brand-border: #1E2942;
+  --color-brand-subtle: #8E9AB4;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
