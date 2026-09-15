@@ -9,12 +9,33 @@ export function GlobalCursor() {
     const cursor = cursorRef.current;
     if (!cursor) return;
 
-    const handleMouseMove = (e) => {
-      cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+    let rafId = null;
+    let latestX = 0;
+    let latestY = 0;
+
+    // OPTIMIZATION: Throttle DOM style updates to animation frames (60-120fps)
+    // using requestAnimationFrame instead of running synchronous layout work on
+    // high-frequency mousemove events (up to 1000Hz on gaming hardware).
+    const updatePosition = () => {
+      cursor.style.transform = `translate3d(${latestX}px, ${latestY}px, 0) translate(-50%, -50%)`;
+      rafId = null;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    const handleMouseMove = (e) => {
+      latestX = e.clientX;
+      latestY = e.clientY;
+
+      if (!rafId) {
+        rafId = requestAnimationFrame(updatePosition);
+      }
+    };
+
+    // Use passive listener to avoid blocking main thread scrolling/input
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
