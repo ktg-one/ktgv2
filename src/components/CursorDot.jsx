@@ -31,10 +31,16 @@ export function CursorDot() {
     let timeoutId = null
     let rafId = null
 
+    // OPTIMIZATION: Pre-allocate GSAP quickSetters for high-performance per-frame property updates.
+    // Calling gsap.set() on every RAF frame creates new objects and parses options 12x/frame (~720-1440 calls/sec).
+    // quickSetter directly mutates the transform property on target DOM nodes with zero allocation overhead.
+    const xSetters = dotsRef.current.map((el) => (el ? gsap.quickSetter(el, "x", "px") : null))
+    const ySetters = dotsRef.current.map((el) => (el ? gsap.quickSetter(el, "y", "px") : null))
+
     // 3. The Animation Loop (Using requestAnimationFrame for better sync with browser)
     const render = () => {
       // Optimization: track whether any dot actually moved significantly in this frame
-      // to avoid redundant gsap.set DOM style mutations when stationary.
+      // to avoid redundant style mutations when stationary.
       let hasSignificantMovement = false
       const MOVEMENT_THRESHOLD = 0.05 // pixels
 
@@ -49,14 +55,10 @@ export function CursorDot() {
       dots[0].x = targetLeaderX
       dots[0].y = targetLeaderY
 
-      // Move the Leader Dot immediately
-      if (dotsRef.current[0]) {
-        gsap.set(dotsRef.current[0], { 
-          x: dots[0].x, 
-          y: dots[0].y,
-          xPercent: -50,
-          yPercent: -50
-        })
+      // Move the Leader Dot immediately via quickSetter
+      if (xSetters[0] && ySetters[0]) {
+        xSetters[0](dots[0].x)
+        ySetters[0](dots[0].y)
       }
 
       // Calculate positions for the followers (The Tail)
@@ -74,14 +76,10 @@ export function CursorDot() {
         curr.x = nextX
         curr.y = nextY
 
-        // Apply movement immediately
-        if (dotsRef.current[i]) {
-          gsap.set(dotsRef.current[i], { 
-            x: curr.x, 
-            y: curr.y,
-            xPercent: -50,
-            yPercent: -50
-          })
+        // Apply movement immediately via quickSetter
+        if (xSetters[i] && ySetters[i]) {
+          xSetters[i](curr.x)
+          ySetters[i](curr.y)
         }
       }
       
@@ -125,7 +123,8 @@ export function CursorDot() {
       }, 2000) // Keep visible for 2s after stop
     }
 
-    window.addEventListener('mousemove', onMouseMove)
+    // OPTIMIZATION: Use passive event listener to prevent blocking main thread
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
     
     // Cleanup
     return () => {

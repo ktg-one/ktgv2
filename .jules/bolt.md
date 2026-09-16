@@ -9,3 +9,7 @@
 ## 2024-05-24 - [Package Lock Noise]
 **Learning:** Running `npm install` can update `package-lock.json` even if no dependencies are added, creating noise in PRs.
 **Action:** Always restore `package-lock.json` if the task does not involve dependency updates, or use `npm ci` (if appropriate for the environment) to avoid modifying the lockfile.
+
+## 2025-05-18 - [Per-Frame GSAP Updates with quickSetter]
+**Learning:** Calling `gsap.set()` on every frame inside high-frequency animation loops (e.g. `requestAnimationFrame` at 60-120fps) causes hundreds of object allocations and redundant property parsing overhead per second.
+**Action:** Pre-allocate `gsap.quickSetter` mutators during setup to update properties directly with zero allocation overhead in per-frame loops.
