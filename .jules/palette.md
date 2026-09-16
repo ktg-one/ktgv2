@@ -1,0 +1,3 @@
+## 2026-03-31 - Accessible Icon-Only Action Buttons & Clipboard Announcements
+**Learning:** Icon-only buttons within content viewers or code cards lack accessible names for screen reader users unless explicitly provided via `aria-label`. Furthermore, temporary notification toasts triggered by clipboard actions must feature `role="status"` and `aria-live="polite"` so screen readers dynamically announce state feedback without disrupting focus.
+**Action:** Always pair icon-only `<Button>` or `<button>` elements with `aria-label` (and dynamic status text where applicable), and ensure feedback toasts utilize `aria-live="polite"`.
