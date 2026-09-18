@@ -23,6 +23,12 @@ export function CursorDot() {
       y: -1000
     })
 
+    // OPTIMIZATION: Pre-create fast setters for x and y properties on all dot elements.
+    // Calling gsap.quickSetter avoids GSAP object instantiation and property parsing overhead
+    // on every frame (eliminating 12x gsap.set allocations per RAF tick ~720-1440/sec).
+    const xSetters = dotsRef.current.map((el) => (el ? gsap.quickSetter(el, "x", "px") : null))
+    const ySetters = dotsRef.current.map((el) => (el ? gsap.quickSetter(el, "y", "px") : null))
+
     // 2. State to track mouse and dot positions
     const mouse = { x: 0, y: 0 }
     // Initialize dots at a far position so they're not visible initially
@@ -49,14 +55,10 @@ export function CursorDot() {
       dots[0].x = targetLeaderX
       dots[0].y = targetLeaderY
 
-      // Move the Leader Dot immediately
-      if (dotsRef.current[0]) {
-        gsap.set(dotsRef.current[0], { 
-          x: dots[0].x, 
-          y: dots[0].y,
-          xPercent: -50,
-          yPercent: -50
-        })
+      // Move the Leader Dot immediately using quickSetter
+      if (xSetters[0] && ySetters[0]) {
+        xSetters[0](dots[0].x)
+        ySetters[0](dots[0].y)
       }
 
       // Calculate positions for the followers (The Tail)
@@ -74,14 +76,10 @@ export function CursorDot() {
         curr.x = nextX
         curr.y = nextY
 
-        // Apply movement immediately
-        if (dotsRef.current[i]) {
-          gsap.set(dotsRef.current[i], { 
-            x: curr.x, 
-            y: curr.y,
-            xPercent: -50,
-            yPercent: -50
-          })
+        // Apply movement immediately using quickSetter
+        if (xSetters[i] && ySetters[i]) {
+          xSetters[i](curr.x)
+          ySetters[i](curr.y)
         }
       }
       
