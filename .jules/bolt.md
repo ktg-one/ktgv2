@@ -9,3 +9,7 @@
 ## 2024-05-24 - [Package Lock Noise]
 **Learning:** Running `npm install` can update `package-lock.json` even if no dependencies are added, creating noise in PRs.
 **Action:** Always restore `package-lock.json` if the task does not involve dependency updates, or use `npm ci` (if appropriate for the environment) to avoid modifying the lockfile.
+
+## 2026-09-18 - [Duplicate Layout Background Component]
+**Learning:** Fixed background components (like `GeometricBackground`) mounted in route layouts (`(intro)/layout.jsx`) will inherit to all child pages. Re-mounting them inside individual page components (`(intro)/page.jsx`) causes duplicate DOM nodes, redundant keyframe animation loops, and unnecessary paint composite layers.
+**Action:** Always check parent layout structures before adding background or layout-level components to individual route pages.
