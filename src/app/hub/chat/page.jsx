@@ -154,6 +154,7 @@ const IconPicker = ({ selected, onSelect }) => {
         <input
           type="text"
           placeholder="search icons..."
+          aria-label="Search icons"
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="w-full bg-zinc-900 border border-zinc-800 pl-8 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#00f0ff] placeholder:text-zinc-600 rounded-none"
@@ -625,6 +626,7 @@ export default function HubChat() {
                     if (e.key === 'Escape') { setIsSavingPreset(false); setPresetNameInput(''); }
                   }}
                   placeholder="preset name..."
+                  aria-label="Preset name"
                   autoFocus
                   className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
                 />
@@ -636,6 +638,7 @@ export default function HubChat() {
                 </button>
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
+                  aria-label="Cancel saving preset"
                   className="p-1.5 text-zinc-500 hover:text-white transition-colors"
                 >
                   <X className="h-3.5 w-3.5" />
@@ -840,6 +843,7 @@ export default function HubChat() {
                         }
                       }}
                       placeholder="explore something new..."
+                      aria-label="Chat message prompt"
                       rows={2}
                       className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none custom-scrollbar"
                       style={{ maxHeight: '200px' }}
