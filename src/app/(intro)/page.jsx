@@ -6,7 +6,6 @@ import { PhilosophySection } from "@/components/PhilosophySection";
 import { Footer } from "@/components/Footer";
 import { ValidationSection } from "@/components/ValidationSection";
 import { BlogPreview } from "@/components/BlogPreview";
-import { GeometricBackground } from "@/components/GeometricBackground";
 import { getPosts } from "@/lib/wordpress";
 
 export default async function Home() {
@@ -14,8 +13,7 @@ export default async function Home() {
 
   return (
     <div className="bg-background min-h-screen flex flex-col relative" suppressHydrationWarning>
-      {/* Global background with gradient glow and grid - reactive to cursor */}
-      <GeometricBackground fixed />
+      {/* OPTIMIZATION: Removed duplicate GeometricBackground. IntroLayout (src/app/(intro)/layout.jsx) already mounts GeometricBackground fixed globally for all intro routes, saving ~50% DOM node & paint overhead on Home. */}
 
       <main className="grow" suppressHydrationWarning>
 
