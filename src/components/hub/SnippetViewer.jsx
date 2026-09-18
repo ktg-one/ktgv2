@@ -64,6 +64,8 @@ export function SnippetViewer({ snippet, content }) {
             variant="ghost"
             size="sm"
             className="h-8 w-8 p-0"
+            aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
+            title={copied ? "Copied snippet code" : "Copy snippet code"}
           >
             {copied ? (
               <Check className="h-4 w-4" />
