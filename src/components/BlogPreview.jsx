@@ -19,30 +19,42 @@ export function BlogPreview({ posts = [] }) {
   }, []);
 
   useGSAP(() => {
-    gsap.set(".blog-card", { opacity: 1, y: 0 });
+    gsap.set(".blog-card", { opacity: 1, y: 0, clipPath: "inset(0% 0% 0% 0%)" });
+    gsap.set(".blog-card img", { scale: 1 });
 
-    if (hasPlayed) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (hasPlayed || prefersReducedMotion) return;
 
     const cards = gsap.utils.toArray(".blog-card");
     if (cards.length === 0) return;
 
-    gsap.set(cards, { opacity: 0, y: 60 });
+    gsap.set(cards, { opacity: 0, y: 60, clipPath: "inset(100% 0% 0% 0%)" });
+    gsap.set(".blog-card img", { scale: 1.3 });
 
-    gsap.to(cards, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.12,
-      ease: "power3.out",
-      onComplete: () => {
-        sessionStorage.setItem("blog-animated", "true");
-      },
+    const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
         start: "top 70%",
         toggleActions: "play none none reverse",
       },
+      onComplete: () => {
+        sessionStorage.setItem("blog-animated", "true");
+      },
     });
+
+    tl.to(cards, {
+      opacity: 1,
+      y: 0,
+      clipPath: "inset(0% 0% 0% 0%)",
+      duration: 1.2,
+      stagger: 0.15,
+      ease: "power4.inOut",
+    }, 0).to(".blog-card img", {
+      scale: 1,
+      duration: 1.5,
+      stagger: 0.15,
+      ease: "power2.out",
+    }, 0);
   }, { scope: sectionRef, dependencies: [hasPlayed] });
 
   if (!posts || posts.length === 0) {
