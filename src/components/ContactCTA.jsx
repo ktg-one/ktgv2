@@ -46,7 +46,7 @@ export function ContactCTA() {
                 name="name"
                 placeholder="your name"
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg h-11"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11"
               />
             </div>
             <div className="space-y-2">
@@ -59,7 +59,7 @@ export function ContactCTA() {
                 type="email"
                 placeholder="you@example.com"
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg h-11"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11"
               />
             </div>
           </div>
@@ -74,13 +74,13 @@ export function ContactCTA() {
               placeholder="what's on your mind?"
               rows={5}
               required
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg resize-none"
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg resize-none"
             />
           </div>
 
           <Button
             type="submit"
-            className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300"
+            className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             send message
           </Button>
