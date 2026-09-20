@@ -112,14 +112,21 @@ function RevealPlane({
     materialRef.current.uniforms.uParallaxBottom.value = parallaxBottom
   }, [parallaxTop, parallaxBottom])
 
+  // OPTIMIZATION: Move static uniform update (aspect ratio) to useEffect hook so it only updates
+  // on viewport resize instead of every tick in the 60-120Hz useFrame animation loop.
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.aspect.value = viewport.aspect
+    }
+  }, [viewport.aspect])
+
   useFrame((state) => {
     if (!materialRef.current) return
     const targetX = (state.pointer.x + 1) / 2
     const targetY = (state.pointer.y + 1) / 2
 
-    materialRef.current.uniforms.mouse.value.x = targetX
-    materialRef.current.uniforms.mouse.value.y = targetY
-    materialRef.current.uniforms.aspect.value = viewport.aspect
+    // Update dynamic mouse position uniform for circular reveal effect
+    materialRef.current.uniforms.mouse.value.set(targetX, targetY)
   })
 
   return (
