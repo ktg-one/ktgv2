@@ -112,14 +112,24 @@ function RevealPlane({
     materialRef.current.uniforms.uParallaxBottom.value = parallaxBottom
   }, [parallaxTop, parallaxBottom])
 
+  // OPTIMIZATION: Update aspect uniform in useEffect on viewport changes
+  // instead of every frame inside useFrame (saving redundant JS-to-WebGL uniform calls at 60-120fps)
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.aspect.value = viewport.aspect
+    }
+  }, [viewport.aspect])
+
   useFrame((state) => {
     if (!materialRef.current) return
     const targetX = (state.pointer.x + 1) / 2
     const targetY = (state.pointer.y + 1) / 2
 
-    materialRef.current.uniforms.mouse.value.x = targetX
-    materialRef.current.uniforms.mouse.value.y = targetY
-    materialRef.current.uniforms.aspect.value = viewport.aspect
+    const mouseUniform = materialRef.current.uniforms.mouse.value
+    if (mouseUniform.x !== targetX || mouseUniform.y !== targetY) {
+      mouseUniform.x = targetX
+      mouseUniform.y = targetY
+    }
   })
 
   return (
