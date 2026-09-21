@@ -107,6 +107,7 @@ export function DockNav() {
                   scroll={pathname !== "/"}
                   className={itemClass(isActive)}
                   aria-label={label}
+                  aria-current={isActive ? "page" : undefined}
                   onClick={() => {
                     if (pathname !== "/") return;
                     requestAnimationFrame(() => {
@@ -117,7 +118,12 @@ export function DockNav() {
                   <Icon size={18} strokeWidth={1.5} />
                 </Link>
               ) : (
-                <Link href={href} className={itemClass(isActive)} aria-label={label}>
+                <Link
+                  href={href}
+                  className={itemClass(isActive)}
+                  aria-label={label}
+                  aria-current={isActive ? "page" : undefined}
+                >
                   <Icon size={18} strokeWidth={1.5} />
                 </Link>
               );
