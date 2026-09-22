@@ -123,7 +123,8 @@ export function CursorDot() {
       }, 2000) // Keep visible for 2s after stop
     }
 
-    window.addEventListener('mousemove', onMouseMove)
+    // Use passive event listener to avoid blocking main thread scrolling and input rendering
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
     
     // Cleanup
     return () => {
