@@ -152,6 +152,14 @@ export function ValidationSection({ auditData }) {
 
   const NUM_FEATURES = features.length;
 
+  const handleFeatureClick = (index) => {
+    const st = ScrollTrigger.getById("validation-hx");
+    if (st) {
+      const targetScroll = st.start + (index / (NUM_FEATURES - 1)) * (st.end - st.start);
+      window.scrollTo({ top: targetScroll, behavior: "smooth" });
+    }
+  };
+
   // Check sessionStorage on client side to prevent hydration mismatch
   useEffect(() => {
     const played = sessionStorage.getItem("validation-animated") === "true";
@@ -311,7 +319,10 @@ export function ValidationSection({ auditData }) {
                         : "border-l-border"
                     }`}
                   >
-                    <AccordionTrigger className="hover:no-underline py-3 [&>svg]:hidden">
+                    <AccordionTrigger
+                      onClick={() => handleFeatureClick(i)}
+                      className="hover:no-underline py-3 [&>svg]:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
+                    >
                       <div className="flex items-center gap-3">
                         <span
                           className={`text-xs font-mono transition-colors duration-300 ${
