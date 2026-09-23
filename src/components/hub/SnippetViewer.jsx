@@ -40,11 +40,12 @@ export function SnippetViewer({ snippet, content }) {
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className="shrink-0"
+          className="shrink-0 transition-colors"
+          aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
         >
           {copied ? (
             <>
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-4 w-4 mr-2 text-emerald-400" />
               Copied
             </>
           ) : (
@@ -63,14 +64,14 @@ export function SnippetViewer({ snippet, content }) {
             onClick={handleCopy}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 hover:bg-white/10"
             aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
             title={copied ? "Copied snippet code" : "Copy snippet code"}
           >
             {copied ? (
-              <Check className="h-4 w-4" />
+              <Check className="h-4 w-4 text-emerald-400" />
             ) : (
-              <Copy className="h-4 w-4" />
+              <Copy className="h-4 w-4 text-muted-foreground hover:text-foreground" />
             )}
           </Button>
         </div>
@@ -84,9 +85,14 @@ export function SnippetViewer({ snippet, content }) {
       </Card>
 
       {copied && (
-        <Card className="px-4 py-2.5">
-          <CardContent className="p-0 text-[13px] text-foreground">
-            Snippet copied to clipboard
+        <Card
+          className="px-4 py-2.5 bg-[#111111] border-emerald-500/30"
+          role="status"
+          aria-live="polite"
+        >
+          <CardContent className="p-0 text-[13px] text-emerald-400 flex items-center gap-2">
+            <Check className="h-4 w-4 shrink-0" />
+            <span>Snippet copied to clipboard</span>
           </CardContent>
         </Card>
       )}
