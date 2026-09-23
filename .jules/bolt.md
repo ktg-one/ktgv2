@@ -17,3 +17,7 @@
 ## 2026-09-18 - [Duplicate Layout Background Component]
 **Learning:** Fixed background components (like `GeometricBackground`) mounted in route layouts (`(intro)/layout.jsx`) will inherit to all child pages. Re-mounting them inside individual page components (`(intro)/page.jsx`) causes duplicate DOM nodes, redundant keyframe animation loops, and unnecessary paint composite layers.
 **Action:** Always check parent layout structures before adding background or layout-level components to individual route pages.
+
+## 2026-09-19 - [ScrollTrigger Scrub State Dispatch Guarding]
+**Learning:** In GSAP `ScrollTrigger` pinned scrub timelines driving React UI state (like active slide/accordion step), `onUpdate` callbacks execute on every frame during scrolling (60–120Hz). Invoking React state setters unconditionally on every frame triggers React dispatch overhead and re-renders even when the calculated index hasn't changed.
+**Action:** Always guard React state setter calls inside `ScrollTrigger` or high-frequency event handlers using a `useRef` tracker (`if (idx !== currentIdxRef.current)`) so state updates fire only when the active index actually changes.

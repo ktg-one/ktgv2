@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -18,6 +18,34 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// OPTIMIZATION: Extract static default audit data outside component scope
+// to prevent re-instantiating fallback object on every render.
+const DEFAULT_AUDIT_DATA = {
+  c0: {
+    title: "Scroll stops",
+    body: "shapes still floating. genius.",
+  },
+  c1: {
+    title: "Cards move",
+    body: "little scrollbar, right side. hi awwwards.",
+  },
+  c2: {
+    title: "Bet your impressed",
+    body: "note the syntax.",
+    code: 'def define_masterful() -> str:\n    "masterful: me"\n    return "CS_Fullstack // Handsome too"',
+  },
+  c3: {
+    title: "Oh theres' more cards",
+    body: "model harness inbound.",
+    code: '{ "hooks": [ { "type": "userGeniusThroughput", "command": "claude:you are a master of long inspiring quotes that mean nothing. Fill in the final card with one that will leave the readers impressed and stumped by provoking thought. Tone: Elaborate, Complex, Clever sounding, Inspirational. Task: Meaningless waste of time quote hidden by impressive command of english language"',
+  },
+  c4: {
+    title: "North Star",
+    quote:
+      "True mastery is not the absence of struggle, but the geometry of it — the careful, intentional architecture of friction through which effort becomes elegance, and elegance, in its highest form, becomes indistinguishable from intuition. To build is to listen. To ship is to believe. To iterate, at last, is to know.",
+  },
+};
+
 /**
  * Graphite.com-style pinned feature section:
  * - Two-column layout: left card display + right accordion nav
@@ -30,125 +58,105 @@ export function ValidationSection({ auditData }) {
   const pinRef = useRef(null);
   const shutterRef = useRef(null);
   const cardRefs = useRef([]);
+  const currentActiveIdx = useRef(0);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
-  // Default Data
-  const data = auditData || {
-    c0: {
-      title: "Scroll stops",
-      body: "shapes still floating. genius.",
-    },
-    c1: {
-      title: "Cards move",
-      body: "little scrollbar, right side. hi awwwards.",
-    },
-    c2: {
-      title: "Bet your impressed",
-      body: "note the syntax.",
-      code: 'def define_masterful() -> str:\n    "masterful: me"\n    return "CS_Fullstack // Handsome too"',
-    },
-    c3: {
-      title: "Oh theres' more cards",
-      body: "model harness inbound.",
-      code: '{ "hooks": [ { "type": "userGeniusThroughput", "command": "claude:you are a master of long inspiring quotes that mean nothing. Fill in the final card with one that will leave the readers impressed and stumped by provoking thought. Tone: Elaborate, Complex, Clever sounding, Inspirational. Task: Meaningless waste of time quote hidden by impressive command of english language"',
-    },
-    c4: {
-      title: "North Star",
-      quote:
-        "True mastery is not the absence of struggle, but the geometry of it — the careful, intentional architecture of friction through which effort becomes elegance, and elegance, in its highest form, becomes indistinguishable from intuition. To build is to listen. To ship is to believe. To iterate, at last, is to know.",
-    },
-  };
+  const data = useMemo(() => auditData || DEFAULT_AUDIT_DATA, [auditData]);
 
-  // Feature definitions — drives both left card and right accordion
-  const features = [
-    {
-      id: "c0",
-      label: "00",
-      title: data.c0.title,
-      accordionDesc: data.c0.body,
-      card: (
-        <div className="digital-text">
-          <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-8 lowercase">
-            {data.c0.title}
-          </h3>
-          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-            {data.c0.body}
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "c1",
-      label: "01",
-      title: data.c1.title,
-      accordionDesc: data.c1.body,
-      card: (
-        <div className="digital-text">
-          <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-8 lowercase">
-            {data.c1.title}
-          </h3>
-          <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
-            {data.c1.body}
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "c2",
-      label: "02",
-      title: data.c2.title,
-      accordionDesc: data.c2.body,
-      card: (
-        <div className="digital-text">
-          <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-6 lowercase">
-            <GlitchText>{data.c2.title}</GlitchText>
-          </h3>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
-            {data.c2.body}
-          </p>
-          <pre className="text-xs md:text-sm font-[family-name:var(--font-iosevka)] text-foreground bg-black/40 border border-border rounded-lg p-5 overflow-auto whitespace-pre-wrap">
-            {data.c2.code}
-          </pre>
-        </div>
-      ),
-    },
-    {
-      id: "c3",
-      label: "03",
-      title: data.c3.title,
-      accordionDesc: data.c3.body,
-      card: (
-        <div className="digital-text">
-          <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-6 lowercase">
-            {data.c3.title}
-          </h3>
-          <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
-            {data.c3.body}
-          </p>
-          <pre className="text-xs md:text-sm font-[family-name:var(--font-iosevka)] text-foreground bg-black/40 border border-border rounded-lg p-5 overflow-auto whitespace-pre-wrap">
-            {data.c3.code}
-          </pre>
-        </div>
-      ),
-    },
-    {
-      id: "c4",
-      label: "04",
-      title: data.c4.title,
-      accordionDesc: data.c4.quote,
-      card: (
-        <div className="digital-text relative h-full flex flex-col justify-center rounded-2xl bg-foreground text-background p-8 md:p-12 -m-8 md:-m-12">
-          <div className="absolute top-6 right-6 opacity-50 text-xs tracking-widest lowercase">
-            {data.c4.title}
+  // OPTIMIZATION: Memoize feature definitions and JSX subtrees so they are not
+  // re-allocated on every activeFeature state change (~5x reduction in allocations).
+  const features = useMemo(
+    () => [
+      {
+        id: "c0",
+        label: "00",
+        title: data.c0.title,
+        accordionDesc: data.c0.body,
+        card: (
+          <div className="digital-text">
+            <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-8 lowercase">
+              {data.c0.title}
+            </h3>
+            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
+              {data.c0.body}
+            </p>
           </div>
-          <blockquote className="text-lg md:text-2xl italic leading-relaxed font-[family-name:var(--font-syne)] pr-8">
-            {data.c4.quote}
-          </blockquote>
-        </div>
-      ),
-    },
-  ];
+        ),
+      },
+      {
+        id: "c1",
+        label: "01",
+        title: data.c1.title,
+        accordionDesc: data.c1.body,
+        card: (
+          <div className="digital-text">
+            <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-8 lowercase">
+              {data.c1.title}
+            </h3>
+            <p className="text-muted-foreground text-lg md:text-xl leading-relaxed">
+              {data.c1.body}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: "c2",
+        label: "02",
+        title: data.c2.title,
+        accordionDesc: data.c2.body,
+        card: (
+          <div className="digital-text">
+            <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-6 lowercase">
+              <GlitchText>{data.c2.title}</GlitchText>
+            </h3>
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
+              {data.c2.body}
+            </p>
+            <pre className="text-xs md:text-sm font-[family-name:var(--font-iosevka)] text-foreground bg-black/40 border border-border rounded-lg p-5 overflow-auto whitespace-pre-wrap">
+              {data.c2.code}
+            </pre>
+          </div>
+        ),
+      },
+      {
+        id: "c3",
+        label: "03",
+        title: data.c3.title,
+        accordionDesc: data.c3.body,
+        card: (
+          <div className="digital-text">
+            <h3 className="text-4xl md:text-6xl font-[family-name:var(--font-syne)] font-bold leading-tight mb-6 lowercase">
+              {data.c3.title}
+            </h3>
+            <p className="text-muted-foreground text-base md:text-lg leading-relaxed mb-6">
+              {data.c3.body}
+            </p>
+            <pre className="text-xs md:text-sm font-[family-name:var(--font-iosevka)] text-foreground bg-black/40 border border-border rounded-lg p-5 overflow-auto whitespace-pre-wrap">
+              {data.c3.code}
+            </pre>
+          </div>
+        ),
+      },
+      {
+        id: "c4",
+        label: "04",
+        title: data.c4.title,
+        accordionDesc: data.c4.quote,
+        card: (
+          <div className="digital-text relative h-full flex flex-col justify-center rounded-2xl bg-foreground text-background p-8 md:p-12 -m-8 md:-m-12">
+            <div className="absolute top-6 right-6 opacity-50 text-xs tracking-widest lowercase">
+              {data.c4.title}
+            </div>
+            <blockquote className="text-lg md:text-2xl italic leading-relaxed font-[family-name:var(--font-syne)] pr-8">
+              {data.c4.quote}
+            </blockquote>
+          </div>
+        ),
+      },
+    ],
+    [data]
+  );
 
   const NUM_FEATURES = features.length;
 
@@ -227,7 +235,12 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: Prevent redundant React state setter dispatches on high-frequency scroll ticks (60-120Hz).
+            // Only update activeFeature state when the active feature index actually changes.
+            if (idx !== currentActiveIdx.current) {
+              currentActiveIdx.current = idx;
+              setActiveFeature(idx);
+            }
           },
         },
       });
