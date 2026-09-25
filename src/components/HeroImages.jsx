@@ -112,14 +112,25 @@ function RevealPlane({
     materialRef.current.uniforms.uParallaxBottom.value = parallaxBottom
   }, [parallaxTop, parallaxBottom])
 
+  // OPTIMIZATION: Update viewport aspect ratio uniform in useEffect on viewport change,
+  // keeping the useFrame render loop clean from static property assignments.
+  useEffect(() => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.aspect.value = viewport.aspect
+    }
+  }, [viewport.aspect])
+
   useFrame((state) => {
     if (!materialRef.current) return
     const targetX = (state.pointer.x + 1) / 2
     const targetY = (state.pointer.y + 1) / 2
 
-    materialRef.current.uniforms.mouse.value.x = targetX
-    materialRef.current.uniforms.mouse.value.y = targetY
-    materialRef.current.uniforms.aspect.value = viewport.aspect
+    const mouseVal = materialRef.current.uniforms.mouse.value
+    // OPTIMIZATION: Only update mouse uniform when coordinates actually change
+    if (mouseVal.x !== targetX || mouseVal.y !== targetY) {
+      mouseVal.x = targetX
+      mouseVal.y = targetY
+    }
   })
 
   return (
