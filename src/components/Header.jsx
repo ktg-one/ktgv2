@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export function Header() {
   return (
     <header className="fixed top-0 right-0 z-[9999] p-6 flex justify-end items-start pointer-events-none">
-      <div className="pointer-events-auto flex gap-4">
+      <nav aria-label="Quick navigation" className="pointer-events-auto flex gap-4">
 
         <Button variant="ghost" asChild className="text-white/50 hover:text-white tracking-widest text-xs cursor-pointer">
           <Link href="/">
@@ -28,7 +28,7 @@ export function Header() {
           </Link>
         </Button>
 
-      </div>
+      </nav>
     </header>
   );
 }
