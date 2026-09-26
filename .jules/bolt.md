@@ -17,3 +17,7 @@
 ## 2026-09-18 - [Duplicate Layout Background Component]
 **Learning:** Fixed background components (like `GeometricBackground`) mounted in route layouts (`(intro)/layout.jsx`) will inherit to all child pages. Re-mounting them inside individual page components (`(intro)/page.jsx`) causes duplicate DOM nodes, redundant keyframe animation loops, and unnecessary paint composite layers.
 **Action:** Always check parent layout structures before adding background or layout-level components to individual route pages.
+
+## 2026-09-19 - [SSR Storage Access in Render/useMemo]
+**Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
+**Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
