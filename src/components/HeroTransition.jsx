@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -15,11 +15,14 @@ export function HeroTransition() {
   const containerRef = useRef(null);
   const wipeRef = useRef(null);
   const gridRevealRef = useRef(null);
+  const [hasPlayed, setHasPlayed] = useState(false);
 
-  // Session-based animation tracking
-  const hasPlayed = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem('hero-transition-played') === 'true';
+  // OPTIMIZATION: Check sessionStorage in useEffect on client mount to prevent SSR hydration mismatch.
+  // Accessing browser storage in render/useMemo causes hydration mismatches and DOM patch overhead.
+  useEffect(() => {
+    if (sessionStorage.getItem('hero-transition-played') === 'true') {
+      setHasPlayed(true);
+    }
   }, []);
 
   useGSAP(() => {

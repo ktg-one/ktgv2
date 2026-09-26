@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useMemo } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getFeaturedImage, formatDate } from "@/lib/wordpress";
@@ -12,10 +12,14 @@ gsap.registerPlugin(ScrollTrigger);
 
 export function BlogPreview({ posts = [] }) {
   const sectionRef = useRef(null);
+  const [hasPlayed, setHasPlayed] = useState(false);
 
-  const hasPlayed = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem('blog-animated') === 'true';
+  // OPTIMIZATION: Check sessionStorage in useEffect on client mount to prevent SSR hydration mismatch.
+  // Accessing browser storage in render/useMemo causes hydration mismatches and DOM patch overhead.
+  useEffect(() => {
+    if (sessionStorage.getItem('blog-animated') === 'true') {
+      setHasPlayed(true);
+    }
   }, []);
 
   useGSAP(() => {
