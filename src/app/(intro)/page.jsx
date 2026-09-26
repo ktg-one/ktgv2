@@ -6,6 +6,7 @@ import { PhilosophySection } from "@/components/PhilosophySection";
 import { Footer } from "@/components/Footer";
 import { ValidationSection } from "@/components/ValidationSection";
 import { BlogPreview } from "@/components/BlogPreview";
+import { ContactCTA } from "@/components/ContactCTA";
 import { getPosts } from "@/lib/wordpress";
 
 export default async function Home() {
@@ -39,6 +40,9 @@ export default async function Home() {
 
         {/* BLOG: 3-tile preview of most recent posts */}
         <BlogPreview posts={posts} />
+
+        {/* CONTACT CTA */}
+        <ContactCTA />
 
       </main>
 
