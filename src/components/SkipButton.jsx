@@ -48,12 +48,19 @@ export function SkipButton() {
         block: "start"
       });
     } else {
-      // Fallback: scroll down significantly to get past hero and other sections
-      // This is a rough estimate - should get us close to blog section
-      window.scrollTo({
-        top: window.innerHeight * 5, // Scroll past hero, transition, expertise, validation, philosophy
-        behavior: "smooth"
-      });
+      const mainContent = document.getElementById("main-content");
+      if (mainContent) {
+        mainContent.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+      } else {
+        // Fallback: scroll down significantly to get past hero
+        window.scrollTo({
+          top: window.innerHeight * 5,
+          behavior: "smooth"
+        });
+      }
     }
 
     // Set session flags so subsequent animations might be skipped or fast-forwarded
@@ -67,8 +74,8 @@ export function SkipButton() {
     <button
       ref={buttonRef}
       onClick={handleSkip}
-      aria-label="Skip introduction animation"
-      className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors border border-white/10 hover:border-white/30 rounded-full bg-black/20 backdrop-blur-sm opacity-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+      aria-label="Skip introduction animation and scroll to main content"
+      className="absolute bottom-8 right-8 z-50 flex items-center gap-2 px-4 py-2 text-xs font-mono uppercase tracking-widest text-white/50 hover:text-white transition-colors border border-white/10 hover:border-white/30 rounded-full bg-black/20 backdrop-blur-sm opacity-0 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
     >
       <span>Skip Intro</span>
       <ArrowDown className="w-3 h-3" aria-hidden="true" />
