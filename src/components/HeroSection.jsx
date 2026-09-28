@@ -37,7 +37,8 @@ export const HeroSection = forwardRef((props, ref) => {
                   window.removeEventListener('scroll', handleScroll);
               }
           };
-          window.addEventListener('scroll', handleScroll);
+          // OPTIMIZATION: Mark scroll listener as passive to prevent main-thread scroll blocking
+          window.addEventListener('scroll', handleScroll, { passive: true });
           return () => window.removeEventListener('scroll', handleScroll);
       }
   }, []);
