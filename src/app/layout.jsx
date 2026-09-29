@@ -1,6 +1,7 @@
 import { Syne, Inter } from "next/font/google";
 import localFont from "next/font/local";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { DockNav } from "@/components/DockNav";
 import "./globals.css";
 
 const syne = Syne({
@@ -70,6 +71,7 @@ export default function RootLayout({ children }) {
         className={`${syne.variable} ${inter.variable} ${iosevka.variable} antialiased text-foreground overflow-x-hidden selection:bg-white selection:text-black relative`}
         suppressHydrationWarning
       >
+        <DockNav />
         {children}
         <SpeedInsights />
       </body>
