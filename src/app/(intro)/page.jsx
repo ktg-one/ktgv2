@@ -24,7 +24,7 @@ export default async function Home() {
         <HeroTransition />
 
         {/* EXPERTISE: White Background (Scrolls over geometric bg) */}
-        <div id="main-content">
+        <div id="main-content" tabIndex={-1} className="outline-none">
           <ExpertiseSection />
         </div>
 
