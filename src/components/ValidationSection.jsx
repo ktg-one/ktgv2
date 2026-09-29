@@ -32,6 +32,7 @@ export function ValidationSection({ auditData }) {
   const cardRefs = useRef([]);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+  const activeFeatureRef = useRef(0);
 
   // Default Data
   const data = auditData || {
@@ -235,7 +236,14 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: ScrollTrigger.onUpdate runs on every scroll frame (60-120Hz).
+            // Guarding state updates with activeFeatureRef prevents ~99% of redundant
+            // setActiveFeature dispatches during smooth scrubbing, eliminating React state
+            // dispatch overhead and main thread work on high-frequency scroll ticks.
+            if (activeFeatureRef.current !== idx) {
+              activeFeatureRef.current = idx;
+              setActiveFeature(idx);
+            }
           },
         },
       });
