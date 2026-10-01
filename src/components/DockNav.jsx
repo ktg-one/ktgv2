@@ -53,17 +53,18 @@ export function DockNav() {
     return () => window.removeEventListener("hashchange", syncHash);
   }, [pathname]);
 
-  const itemClass = (active) =>
-    cn(
-      "flex size-10 items-center justify-center rounded-full border border-transparent transition-all duration-300 ease-out will-change-[box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black",
-      active
-        ? "border-[rgba(0,240,255,0.32)] bg-[rgba(0,240,255,0.14)] text-[#00f0ff] shadow-[0_0_14px_rgba(0,240,255,0.38),0_0_32px_rgba(0,240,255,0.16)]"
-        : cn(
-            "text-white/40",
-            "hover:scale-[1.04] hover:border-[rgba(0,240,255,0.38)] hover:bg-[rgba(0,240,255,0.1)] hover:text-[#00f0ff]",
-            "hover:shadow-[0_0_20px_rgba(0,240,255,0.5),0_0_40px_rgba(0,240,255,0.24),0_0_64px_rgba(0,240,255,0.12)]",
-          ),
-    );
+// OPTIMIZATION: Pre-merge Tailwind classes at module load time to eliminate repeated twMerge/clsx parsing on every render
+const ITEM_CLASS_BASE = "flex size-10 items-center justify-center rounded-full border border-transparent transition-all duration-300 ease-out will-change-[box-shadow,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black";
+
+const ITEM_CLASS_ACTIVE = cn(
+  ITEM_CLASS_BASE,
+  "border-[rgba(0,240,255,0.32)] bg-[rgba(0,240,255,0.14)] text-[#00f0ff] shadow-[0_0_14px_rgba(0,240,255,0.38),0_0_32px_rgba(0,240,255,0.16)]"
+);
+
+const ITEM_CLASS_INACTIVE = cn(
+  ITEM_CLASS_BASE,
+  "text-white/40 hover:scale-[1.04] hover:border-[rgba(0,240,255,0.38)] hover:bg-[rgba(0,240,255,0.1)] hover:text-[#00f0ff] hover:shadow-[0_0_20px_rgba(0,240,255,0.5),0_0_40px_rgba(0,240,255,0.24),0_0_64px_rgba(0,240,255,0.12)]"
+);
 
   return (
     <TooltipProvider delayDuration={0}>
@@ -105,7 +106,7 @@ export function DockNav() {
                 <Link
                   href={href}
                   scroll={pathname !== "/"}
-                  className={itemClass(isActive)}
+                  className={isActive ? ITEM_CLASS_ACTIVE : ITEM_CLASS_INACTIVE}
                   aria-label={label}
                   onClick={() => {
                     if (pathname !== "/") return;
@@ -117,7 +118,7 @@ export function DockNav() {
                   <Icon size={18} strokeWidth={1.5} />
                 </Link>
               ) : (
-                <Link href={href} className={itemClass(isActive)} aria-label={label}>
+                <Link href={href} className={isActive ? ITEM_CLASS_ACTIVE : ITEM_CLASS_INACTIVE} aria-label={label}>
                   <Icon size={18} strokeWidth={1.5} />
                 </Link>
               );
