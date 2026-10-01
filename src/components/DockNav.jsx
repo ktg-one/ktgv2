@@ -114,11 +114,11 @@ export function DockNav() {
                     });
                   }}
                 >
-                  <Icon size={18} strokeWidth={1.5} />
+                  <Icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </Link>
               ) : (
                 <Link href={href} className={itemClass(isActive)} aria-label={label}>
-                  <Icon size={18} strokeWidth={1.5} />
+                  <Icon size={18} strokeWidth={1.5} aria-hidden="true" />
                 </Link>
               );
 
