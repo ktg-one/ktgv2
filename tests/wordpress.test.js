@@ -17,6 +17,7 @@ test('getFeaturedImage handles missing or empty embedded media safely', () => {
   assert.equal(getFeaturedImage({}), null);
   assert.equal(getFeaturedImage({ _embedded: {} }), null);
   assert.equal(getFeaturedImage({ _embedded: { 'wp:featuredmedia': [] } }), null);
+  assert.equal(getFeaturedImage({ _embedded: { 'wp:featuredmedia': [{}] } }), null);
 });
 
 test('getFeaturedImage handles null and undefined post safely without throwing', () => {
@@ -33,4 +34,5 @@ test('formatDate handles empty, invalid, null, and undefined date inputs safely'
   assert.equal(formatDate(''), '');
   assert.equal(formatDate(null), '');
   assert.equal(formatDate(undefined), '');
+  assert.equal(formatDate(12345), '');
 });
