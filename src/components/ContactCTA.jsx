@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,6 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
 
 export function ContactCTA() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = () => {
+    setSubmitted(true);
+  };
+
   return (
     <section id="contact" className="relative py-24 md:py-32 px-6 md:px-12 z-[60]">
       <div className="max-w-2xl mx-auto">
@@ -34,6 +42,7 @@ export function ContactCTA() {
           action="mailto:kevin@ktg.one"
           method="POST"
           encType="text/plain"
+          onSubmit={handleSubmit}
           className="space-y-6"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -78,12 +87,32 @@ export function ContactCTA() {
             />
           </div>
 
-          <Button
-            type="submit"
-            className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300"
-          >
-            send message
-          </Button>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <Button
+              type="submit"
+              className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300 flex items-center gap-2"
+            >
+              {submitted ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-white" aria-hidden="true" />
+                  <span>opening email client...</span>
+                </>
+              ) : (
+                "send message"
+              )}
+            </Button>
+
+            <div aria-live="polite" className="text-xs text-white/50 font-mono">
+              {submitted && (
+                <span>
+                  If your email app didn&apos;t open, email directly at{" "}
+                  <a href="mailto:kevin@ktg.one" className="text-[#00f0ff] underline">
+                    kevin@ktg.one
+                  </a>
+                </span>
+              )}
+            </div>
+          </div>
         </form>
       </div>
     </section>
