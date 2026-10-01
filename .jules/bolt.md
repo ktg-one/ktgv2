@@ -21,3 +21,7 @@
 ## 2026-09-19 - [SSR Storage Access in Render/useMemo]
 **Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
 **Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
+
+## 2026-09-20 - [Allocation Overhead in Typography Split Spans]
+**Learning:** Components that split text into individual word and character spans for GSAP stagger animations (like `SplitText`) create dozens of inline style objects and string array allocations inside nested map loops on every render pass.
+**Action:** Always extract static style objects to top-level module constants, wrap text splitting logic with `useMemo`, and memoize the component with `React.memo` to eliminate redundant regex operations and garbage collection pressure on re-renders.
