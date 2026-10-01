@@ -21,3 +21,7 @@
 ## 2026-09-19 - [SSR Storage Access in Render/useMemo]
 **Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
 **Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
+
+## 2026-09-20 - [ScrollTrigger State Updates in Scrub Loops]
+**Learning:** Calling React `setState` inside GSAP `ScrollTrigger` `onUpdate` callbacks during pinned scrub sequences runs on every scroll frame (60–120Hz). Even when the calculated index hasn't changed, dispatching state updates continuously creates main-thread CPU overhead and state update checks on every tick.
+**Action:** Always guard state dispatches in `ScrollTrigger` `onUpdate` loops using a `useRef` to confirm the value has actually changed before calling `setState`.
