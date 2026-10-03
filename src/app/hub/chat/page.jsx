@@ -150,12 +150,13 @@ const IconPicker = ({ selected, onSelect }) => {
   return (
     <div className="flex flex-col gap-2 border border-zinc-800 bg-black p-2 transition-[border-color,box-shadow] duration-300 hover:border-[rgba(0,240,255,0.2)] hover:shadow-[0_0_20px_rgba(0,240,255,0.1)]">
       <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" aria-hidden="true" />
         <input
           type="text"
           placeholder="search icons..."
           value={search}
           onChange={e => setSearch(e.target.value)}
+          aria-label="Search icons"
           className="w-full bg-zinc-900 border border-zinc-800 pl-8 pr-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-[#00f0ff] placeholder:text-zinc-600 rounded-none"
         />
       </div>
@@ -165,16 +166,18 @@ const IconPicker = ({ selected, onSelect }) => {
           return (
             <button
               key={name}
+              type="button"
               onClick={() => onSelect(name)}
               title={name}
+              aria-label={`Select icon ${name}`}
               className={cn(
-                "aspect-square flex items-center justify-center transition-all",
+                "aspect-square flex items-center justify-center transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]",
                 selected === name
                   ? "bg-[#00f0ff]/10 border border-[#00f0ff] text-[#00f0ff]"
                   : "bg-zinc-900 border border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-white"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-4 w-4" aria-hidden="true" />
             </button>
           );
         })}
@@ -1029,10 +1032,12 @@ export default function HubChat() {
                 {AVAILABLE_COLORS.map((c, idx) => (
                   <button
                     key={idx}
+                    type="button"
                     onClick={() => setNewPersona(p => ({ ...p, colorIdx: idx, customColor: c.hex }))}
                     style={{ backgroundColor: c.hex }}
+                    aria-label={`Select color ${c.hex}`}
                     className={cn(
-                      "h-6 w-6 border-2 transition-all shrink-0",
+                      "h-6 w-6 border-2 transition-all shrink-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]",
                       newPersona.colorIdx === idx ? "border-white scale-110" : "border-transparent"
                     )}
                   />
@@ -1043,6 +1048,7 @@ export default function HubChat() {
                   onChange={e => setNewPersona(p => ({ ...p, customColor: e.target.value, colorIdx: -1 }))}
                   className="h-6 w-6 cursor-pointer border border-zinc-700 bg-zinc-900 p-0 rounded-none shrink-0"
                   title="custom color"
+                  aria-label="Custom color picker"
                 />
               </div>
             </div>
