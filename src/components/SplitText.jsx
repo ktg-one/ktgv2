@@ -1,8 +1,13 @@
+import { memo } from "react";
+
 /**
  * Word + character spans for GSAP stagger (no @gsap/splittext Club plugin).
  * Pass a plain string as children only.
+ *
+ * OPTIMIZATION: Memoized with React.memo to prevent expensive re-splitting of string
+ * into nested word/char DOM elements on parent component re-renders (e.g. state updates in PhilosophySection).
  */
-export function SplitText({
+export const SplitText = memo(function SplitText({
   children,
   className = "",
   wordClass = "split-word",
@@ -38,4 +43,4 @@ export function SplitText({
       ))}
     </span>
   );
-}
+});
