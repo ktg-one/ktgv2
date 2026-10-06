@@ -628,6 +628,7 @@ export default function HubChat() {
                     if (e.key === 'Escape') { setIsSavingPreset(false); setPresetNameInput(''); }
                   }}
                   placeholder="preset name..."
+                  aria-label="Preset name"
                   autoFocus
                   className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
                 />
@@ -798,6 +799,7 @@ export default function HubChat() {
                             type="button"
                             onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
                             title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
+                            aria-label={isLoaded ? `Modifier: ${slot.label}` : `Empty modifier slot ${slotNum}`}
                             className={cn(
                               "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
                               !isLoaded
@@ -843,6 +845,7 @@ export default function HubChat() {
                         }
                       }}
                       placeholder="explore something new..."
+                      aria-label="Type your message"
                       rows={2}
                       className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none custom-scrollbar"
                       style={{ maxHeight: '200px' }}
