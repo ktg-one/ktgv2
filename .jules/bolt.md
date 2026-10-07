@@ -21,3 +21,7 @@
 ## 2026-09-19 - [SSR Storage Access in Render/useMemo]
 **Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
 **Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
+
+## 2026-09-20 - [Per-Word ScrollTrigger Loop Anti-Pattern]
+**Learning:** Creating individual `ScrollTrigger` instances per word in text split animations creates dozens of concurrent scroll-driven trigger calculations per frame, causing scroll lag and excessive layout checking.
+**Action:** Combine word or character animations into a single GSAP timeline attached to the parent container element's `ScrollTrigger` rather than creating `ScrollTrigger` instances inside loops.
