@@ -11,8 +11,12 @@ export function SnippetCard({ snippet, content }) {
     : content || "";
 
   return (
-    <Link href={`/hub/snippets/${snippet.id}`} className="group block">
-      <Card className="flex h-[200px] flex-col overflow-hidden bg-[#0a0a0a] transition-colors hover:border-muted-foreground/50">
+    <Link
+      href={`/hub/snippets/${snippet.id}`}
+      className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+      aria-label={`View snippet: ${snippet.title}`}
+    >
+      <Card className="flex h-[200px] flex-col overflow-hidden bg-[#0a0a0a] transition-colors hover:border-muted-foreground/50 group-hover:border-muted-foreground/50">
         {/* Code preview section */}
         <div className="m-2 h-[100px] overflow-hidden rounded-md border border-border/50 bg-[#111111] p-3">
           <p className="font-mono text-xs leading-relaxed text-muted-foreground line-clamp-4">
