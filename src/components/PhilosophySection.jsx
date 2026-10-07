@@ -141,40 +141,48 @@ export function PhilosophySection({ philosophyData }) {
         }
       }
 
+      // OPTIMIZATION: Consolidate per-word ScrollTriggers into a single timeline per quote.
+      // Creating individual ScrollTriggers for every word in a loop (18+ triggers) incurs heavy
+      // scroll listener & layout checking overhead on every frame.
+
       // --- Quote 2: Tympanus Effect 21 — chars explode from center with depth per word ---
       const q2 = quoteRefs.current[1];
       if (q2) {
         const words = [...q2.querySelectorAll(".split-word")];
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          if (!chars.length) continue;
-          chars.forEach((char) =>
-            gsap.set(char.parentNode, { perspective: 2000 })
-          );
-          gsap.fromTo(
-            chars,
-            {
-              willChange: "opacity, transform",
-              opacity: 0,
-              y: (i, _el, arr) => -40 * Math.abs(i - arr.length / 2),
-              z: () => gsap.utils.random(-1500, -600),
-              rotationX: () => gsap.utils.random(-500, -200),
+        if (words.length) {
+          const q2Tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: q2,
+              start: "top bottom-=10%",
+              end: "bottom top+=20%",
+              scrub: true,
             },
-            {
-              ease: "power1.inOut",
-              opacity: 1,
-              y: 0,
-              z: 0,
-              rotationX: 0,
-              stagger: { each: 0.06, from: "center" },
-              scrollTrigger: {
-                trigger: word,
-                start: "top bottom",
-                end: "top top+=15%",
-                scrub: true,
+          });
+          words.forEach((word) => {
+            const chars = word.querySelectorAll(".split-char");
+            if (!chars.length) return;
+            chars.forEach((char) =>
+              gsap.set(char.parentNode, { perspective: 2000 })
+            );
+            q2Tl.fromTo(
+              chars,
+              {
+                opacity: 0,
+                y: (i, _el, arr) => -40 * Math.abs(i - arr.length / 2),
+                z: () => gsap.utils.random(-1500, -600),
+                rotationX: () => gsap.utils.random(-500, -200),
               },
-            }
-          );
+              {
+                ease: "power1.inOut",
+                opacity: 1,
+                y: 0,
+                z: 0,
+                rotationX: 0,
+                stagger: { each: 0.06, from: "center" },
+              },
+              0
+            );
+          });
         }
       }
 
@@ -182,85 +190,89 @@ export function PhilosophySection({ philosophyData }) {
       const q3 = quoteRefs.current[2];
       if (q3) {
         const words = [...q3.querySelectorAll(".split-word")];
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          const len = chars.length;
-          if (!len) continue;
-          gsap.fromTo(
-            chars,
-            {
-              willChange: "transform, filter",
-              transformOrigin: "50% 100%",
-              scale: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return gsap.utils.mapRange(
-                  0,
-                  Math.ceil(len / 2),
-                  0.5,
-                  2.1,
-                  idx
-                );
-              },
-              y: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return gsap.utils.mapRange(
-                  0,
-                  Math.ceil(len / 2),
-                  0,
-                  60,
-                  idx
-                );
-              },
-              rotation: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return i < len / 2
-                  ? gsap.utils.mapRange(
-                      0,
-                      Math.ceil(len / 2),
-                      -4,
-                      0,
-                      idx
-                    )
-                  : gsap.utils.mapRange(
-                      0,
-                      Math.ceil(len / 2),
-                      0,
-                      4,
-                      idx
-                    );
-              },
-              filter: "blur(12px) opacity(0)",
+        if (words.length) {
+          const q3Tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: q3,
+              start: "top bottom-=10%",
+              end: "bottom top+=20%",
+              scrub: true,
             },
-            {
-              ease: "power2.inOut",
-              y: 0,
-              rotation: 0,
-              scale: 1,
-              filter: "blur(0px) opacity(1)",
-              scrollTrigger: {
-                trigger: word,
-                start: "top bottom+=40%",
-                end: "top top+=15%",
-                scrub: true,
+          });
+          words.forEach((word) => {
+            const chars = word.querySelectorAll(".split-char");
+            const len = chars.length;
+            if (!len) return;
+            q3Tl.fromTo(
+              chars,
+              {
+                transformOrigin: "50% 100%",
+                scale: (i) => {
+                  const idx =
+                    i < Math.ceil(len / 2)
+                      ? i
+                      : Math.ceil(len / 2) -
+                        Math.abs(Math.floor(len / 2) - i) -
+                        1;
+                  return gsap.utils.mapRange(
+                    0,
+                    Math.ceil(len / 2),
+                    0.5,
+                    2.1,
+                    idx
+                  );
+                },
+                y: (i) => {
+                  const idx =
+                    i < Math.ceil(len / 2)
+                      ? i
+                      : Math.ceil(len / 2) -
+                        Math.abs(Math.floor(len / 2) - i) -
+                        1;
+                  return gsap.utils.mapRange(
+                    0,
+                    Math.ceil(len / 2),
+                    0,
+                    60,
+                    idx
+                  );
+                },
+                rotation: (i) => {
+                  const idx =
+                    i < Math.ceil(len / 2)
+                      ? i
+                      : Math.ceil(len / 2) -
+                        Math.abs(Math.floor(len / 2) - i) -
+                        1;
+                  return i < len / 2
+                    ? gsap.utils.mapRange(
+                        0,
+                        Math.ceil(len / 2),
+                        -4,
+                        0,
+                        idx
+                      )
+                    : gsap.utils.mapRange(
+                        0,
+                        Math.ceil(len / 2),
+                        0,
+                        4,
+                        idx
+                      );
+                },
+                filter: "blur(12px) opacity(0)",
               },
-              stagger: { amount: 0.15, from: "center" },
-            }
-          );
+              {
+                ease: "power2.inOut",
+                y: 0,
+                rotation: 0,
+                scale: 1,
+                filter: "blur(0px) opacity(1)",
+                stagger: { amount: 0.15, from: "center" },
+              },
+              0
+            );
+          });
         }
       }
 
