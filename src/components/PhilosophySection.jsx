@@ -55,9 +55,11 @@ export function PhilosophySection({ philosophyData }) {
       // --- Heading: Tympanus Effect 19 — rotationX -90 flip from top with z depth ---
       const headingChars = textRef.current?.querySelectorAll("h2 .split-char");
       if (headingChars?.length) {
-        headingChars.forEach((char) =>
-          gsap.set(char.parentNode, { perspective: 1000 })
-        );
+        // OPTIMIZATION: Batch set perspective on parent word containers once instead of looping per char
+        const headingWords = textRef.current?.querySelectorAll("h2 .split-word");
+        if (headingWords?.length) {
+          gsap.set(headingWords, { perspective: 1000 });
+        }
         gsap.fromTo(
           headingChars,
           {
@@ -113,9 +115,11 @@ export function PhilosophySection({ philosophyData }) {
       if (q1) {
         const chars = q1.querySelectorAll(".split-char");
         if (chars.length) {
-          chars.forEach((char) =>
-            gsap.set(char.parentNode, { perspective: 1000 })
-          );
+          // OPTIMIZATION: Batch set perspective on parent word containers once instead of looping per char
+          const q1Words = q1.querySelectorAll(".split-word");
+          if (q1Words?.length) {
+            gsap.set(q1Words, { perspective: 1000 });
+          }
           gsap.fromTo(
             chars,
             {
@@ -145,12 +149,13 @@ export function PhilosophySection({ philosophyData }) {
       const q2 = quoteRefs.current[1];
       if (q2) {
         const words = [...q2.querySelectorAll(".split-word")];
+        // OPTIMIZATION: Batch set perspective on all word containers once outside the loop
+        if (words.length) {
+          gsap.set(words, { perspective: 2000 });
+        }
         for (const word of words) {
           const chars = word.querySelectorAll(".split-char");
           if (!chars.length) continue;
-          chars.forEach((char) =>
-            gsap.set(char.parentNode, { perspective: 2000 })
-          );
           gsap.fromTo(
             chars,
             {
