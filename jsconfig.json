@@ -2,7 +2,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@designcodeio/threeui": ["./src/shaders/index.ts"],
+      "@designcodeio/threeui/style.css": ["./src/shaders/threeui.css"]
     }
   }
 }

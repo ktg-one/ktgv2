@@ -1,8 +1,10 @@
+const path = require('path');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Explicitly set the workspace root to prevent Next.js from inferring incorrectly
   // when parent directories have lockfiles
-  outputFileTracingRoot: require('path').join(__dirname),
+  outputFileTracingRoot: path.join(__dirname),
   images: {
     remotePatterns: [
       {
@@ -22,6 +24,15 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  webpack(config) {
+    config.resolve.alias['@designcodeio/threeui/style.css'] = path.resolve(__dirname, 'src/shaders/threeui.css');
+    config.resolve.alias['@designcodeio/threeui'] = path.resolve(__dirname, 'src/shaders/index.ts');
+    config.module.rules.push({
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    });
+    return config;
+  },
   poweredByHeader: false,
   compress: true,
   reactStrictMode: true,
@@ -31,4 +42,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
