@@ -21,3 +21,7 @@
 ## 2026-09-19 - [SSR Storage Access in Render/useMemo]
 **Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
 **Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
+
+## 2026-09-20 - [High-Frequency Mousemove Timer Allocations]
+**Learning:** Calling `clearTimeout` and `setTimeout` on every `mousemove` event in multi-element cursor trails (firing up to 1000Hz on modern high-polling hardware) instantiates and clears thousands of timer handles per second, causing CPU overhead and garbage collection pauses.
+**Action:** Track movement timestamps (`lastMouseMoveTime = performance.now()`) and evaluate inactivity thresholds directly within the active `requestAnimationFrame` loop, and attach the listener with `{ passive: true }`.

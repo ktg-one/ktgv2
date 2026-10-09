@@ -34,7 +34,7 @@ export function CursorDot() {
     // Initialize dots at a far position so they're not visible initially
     const dots = dotsRef.current.map(() => ({ x: -1000, y: -1000 }))
     let isMoving = false
-    let timeoutId = null
+    let lastMouseMoveTime = 0
     let rafId = null
 
     // 3. The Animation Loop (Using requestAnimationFrame for better sync with browser)
@@ -83,7 +83,15 @@ export function CursorDot() {
         }
       }
       
-      // Continue animation loop only if moving or trail is still settling
+      // OPTIMIZATION: Check inactivity threshold directly in RAF loop.
+      // If stationary for >2s, fade out dots and stop RAF loop without per-event clearTimeout/setTimeout allocations.
+      if (!hasSignificantMovement && (performance.now() - lastMouseMoveTime > 2000)) {
+        isMoving = false
+        gsap.to(dotsRef.current, { opacity: 0, scale: 0, duration: 0.5 })
+        return
+      }
+
+      // Continue animation loop if moving or trail is still settling
       if (isMoving || hasSignificantMovement) {
         rafId = requestAnimationFrame(render)
       }
@@ -91,16 +99,17 @@ export function CursorDot() {
 
     // 4. Mouse Event Listeners
     const onMouseMove = (e) => {
-      // Update mouse position immediately
+      // Update mouse position and timestamp immediately
       mouse.x = e.clientX
       mouse.y = e.clientY
+      lastMouseMoveTime = performance.now()
       
       // If this is the first movement, initialize leader dot at mouse position
       if (!isMoving) {
         dots[0].x = mouse.x
         dots[0].y = mouse.y
         // Initialize all dots at mouse position for instant appearance
-        dots.forEach((dot, i) => {
+        dots.forEach((dot) => {
           dot.x = mouse.x
           dot.y = mouse.y
         })
@@ -113,23 +122,15 @@ export function CursorDot() {
           duration: 0.3 
         })
       }
-
-      // Hide trail when mouse stops moving for a bit
-      clearTimeout(timeoutId)
-      timeoutId = setTimeout(() => {
-        if (rafId) cancelAnimationFrame(rafId)
-        isMoving = false
-        gsap.to(dotsRef.current, { opacity: 0, scale: 0, duration: 0.5 })
-      }, 2000) // Keep visible for 2s after stop
     }
 
-    window.addEventListener('mousemove', onMouseMove)
+    // OPTIMIZATION: Add passive listener to allow unblocked browser event processing
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
     
     // Cleanup
     return () => {
       window.removeEventListener('mousemove', onMouseMove)
       if (rafId) cancelAnimationFrame(rafId)
-      clearTimeout(timeoutId)
     }
   }, { scope: containerRef })
 
