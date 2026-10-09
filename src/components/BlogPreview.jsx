@@ -80,7 +80,7 @@ export function BlogPreview({ posts = [] }) {
           </div>
           <Link
             href="/blog"
-            className="hidden md:inline-block text-xs md:text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest uppercase"
+            className="hidden md:inline-block text-xs md:text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
           >
             view all &rarr;
           </Link>
@@ -106,7 +106,7 @@ export function BlogPreview({ posts = [] }) {
               <Link
                 key={post.id}
                 href={`/blog/${post.slug}`}
-                className={`blog-card group ${colSpan}`}
+                className={`blog-card group rounded-xl ${colSpan} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
               >
                 <article className="h-full flex flex-col border border-white/10 hover:border-white/30 transition-all duration-300 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-white/5">
                   {featuredImage && (
@@ -163,7 +163,7 @@ export function BlogPreview({ posts = [] }) {
         <div className="mt-12 text-center md:hidden">
           <Link
             href="/blog"
-            className="inline-block text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white/30"
+            className="inline-block text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
           >
             view all posts &rarr;
           </Link>
