@@ -30,6 +30,7 @@ export function ValidationSection({ auditData }) {
   const pinRef = useRef(null);
   const shutterRef = useRef(null);
   const cardRefs = useRef([]);
+  const activeFeatureRef = useRef(0);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
@@ -153,6 +154,10 @@ export function ValidationSection({ auditData }) {
   const NUM_FEATURES = features.length;
 
   const handleFeatureClick = (index) => {
+    if (activeFeatureRef.current !== index) {
+      activeFeatureRef.current = index;
+      setActiveFeature(index);
+    }
     const st = ScrollTrigger.getById("validation-hx");
     if (st) {
       const targetScroll = st.start + (index / (NUM_FEATURES - 1)) * (st.end - st.start);
@@ -235,7 +240,12 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: Check ref to avoid scheduling redundant React state dispatches
+            // on every 60-120Hz scroll scrub tick when the active index has not changed.
+            if (activeFeatureRef.current !== idx) {
+              activeFeatureRef.current = idx;
+              setActiveFeature(idx);
+            }
           },
         },
       });
