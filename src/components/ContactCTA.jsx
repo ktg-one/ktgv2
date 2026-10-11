@@ -21,7 +21,7 @@ export function ContactCTA() {
           want to try the tool surface first?{" "}
           <Link
             href="/hub/chat"
-            className="text-[#00f0ff]/90 hover:text-[#00f0ff] underline-offset-4 hover:underline"
+            className="text-[#00f0ff]/90 hover:text-[#00f0ff] underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-xs"
           >
             open hub chat
           </Link>
@@ -38,20 +38,21 @@ export function ContactCTA() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-white/60 text-xs tracking-widest font-syne">
-                Name
+              <Label htmlFor="name" className="text-white/60 text-xs tracking-widest font-syne flex items-center gap-1">
+                Name <span className="text-[#00f0ff]" aria-hidden="true">*</span>
               </Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="your name"
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg h-11"
+                aria-required="true"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:border-[#00f0ff]/50 focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11 transition-colors"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/60 text-xs tracking-widest font-syne">
-                Email
+              <Label htmlFor="email" className="text-white/60 text-xs tracking-widest font-syne flex items-center gap-1">
+                Email <span className="text-[#00f0ff]" aria-hidden="true">*</span>
               </Label>
               <Input
                 id="email"
@@ -59,14 +60,15 @@ export function ContactCTA() {
                 type="email"
                 placeholder="you@example.com"
                 required
-                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg h-11"
+                aria-required="true"
+                className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:border-[#00f0ff]/50 focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11 transition-colors"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message" className="text-white/60 text-xs tracking-widest font-syne">
-              Message
+            <Label htmlFor="message" className="text-white/60 text-xs tracking-widest font-syne flex items-center gap-1">
+              Message <span className="text-[#00f0ff]" aria-hidden="true">*</span>
             </Label>
             <Textarea
               id="message"
@@ -74,13 +76,14 @@ export function ContactCTA() {
               placeholder="what's on your mind?"
               rows={5}
               required
-              className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-white/30 focus:ring-white/10 rounded-lg resize-none"
+              aria-required="true"
+              className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:border-[#00f0ff]/50 focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg resize-none transition-colors"
             />
           </div>
 
           <Button
             type="submit"
-            className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300"
+            className="bg-emerald-500/90 hover:bg-emerald-500 text-white font-syne tracking-widest text-sm h-11 px-8 rounded-full transition-all duration-300 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             send message
           </Button>
