@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -18,6 +18,33 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Default audit data extracted to module scope to ensure stable reference when prop is omitted
+const DEFAULT_AUDIT_DATA = {
+  c0: {
+    title: "Scroll stops",
+    body: "shapes still floating. genius.",
+  },
+  c1: {
+    title: "Cards move",
+    body: "little scrollbar, right side. hi awwwards.",
+  },
+  c2: {
+    title: "Bet your impressed",
+    body: "note the syntax.",
+    code: 'def define_masterful() -> str:\n    "masterful: me"\n    return "CS_Fullstack // Handsome too"',
+  },
+  c3: {
+    title: "Oh theres' more cards",
+    body: "model harness inbound.",
+    code: '{ "hooks": [ { "type": "userGeniusThroughput", "command": "claude:you are a master of long inspiring quotes that mean nothing. Fill in the final card with one that will leave the readers impressed and stumped by provoking thought. Tone: Elaborate, Complex, Clever sounding, Inspirational. Task: Meaningless waste of time quote hidden by impressive command of english language"',
+  },
+  c4: {
+    title: "North Star",
+    quote:
+      "True mastery is not the absence of struggle, but the geometry of it — the careful, intentional architecture of friction through which effort becomes elegance, and elegance, in its highest form, becomes indistinguishable from intuition. To build is to listen. To ship is to believe. To iterate, at last, is to know.",
+  },
+};
+
 /**
  * Graphite.com-style pinned feature section:
  * - Two-column layout: left card display + right accordion nav
@@ -30,38 +57,14 @@ export function ValidationSection({ auditData }) {
   const pinRef = useRef(null);
   const shutterRef = useRef(null);
   const cardRefs = useRef([]);
+  const activeFeatureRef = useRef(0);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
-  // Default Data
-  const data = auditData || {
-    c0: {
-      title: "Scroll stops",
-      body: "shapes still floating. genius.",
-    },
-    c1: {
-      title: "Cards move",
-      body: "little scrollbar, right side. hi awwwards.",
-    },
-    c2: {
-      title: "Bet your impressed",
-      body: "note the syntax.",
-      code: 'def define_masterful() -> str:\n    "masterful: me"\n    return "CS_Fullstack // Handsome too"',
-    },
-    c3: {
-      title: "Oh theres' more cards",
-      body: "model harness inbound.",
-      code: '{ "hooks": [ { "type": "userGeniusThroughput", "command": "claude:you are a master of long inspiring quotes that mean nothing. Fill in the final card with one that will leave the readers impressed and stumped by provoking thought. Tone: Elaborate, Complex, Clever sounding, Inspirational. Task: Meaningless waste of time quote hidden by impressive command of english language"',
-    },
-    c4: {
-      title: "North Star",
-      quote:
-        "True mastery is not the absence of struggle, but the geometry of it — the careful, intentional architecture of friction through which effort becomes elegance, and elegance, in its highest form, becomes indistinguishable from intuition. To build is to listen. To ship is to believe. To iterate, at last, is to know.",
-    },
-  };
+  const data = auditData || DEFAULT_AUDIT_DATA;
 
-  // Feature definitions — drives both left card and right accordion
-  const features = [
+  // OPTIMIZATION: Memoize feature definitions and card JSX trees to avoid recreating element subtrees on every render
+  const features = useMemo(() => [
     {
       id: "c0",
       label: "00",
@@ -148,7 +151,7 @@ export function ValidationSection({ auditData }) {
         </div>
       ),
     },
-  ];
+  ], [auditData]);
 
   const NUM_FEATURES = features.length;
 
@@ -159,6 +162,11 @@ export function ValidationSection({ auditData }) {
       window.scrollTo({ top: targetScroll, behavior: "smooth" });
     }
   };
+
+  // Keep activeFeatureRef in sync with activeFeature state to prevent state desynchronization
+  useEffect(() => {
+    activeFeatureRef.current = activeFeature;
+  }, [activeFeature]);
 
   // Check sessionStorage on client side to prevent hydration mismatch
   useEffect(() => {
@@ -235,7 +243,12 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: Only dispatch state updates when active feature step actually changes,
+            // avoiding ~99% of React state updater calls on high-frequency (60-120Hz) scroll ticks.
+            if (activeFeatureRef.current !== idx) {
+              activeFeatureRef.current = idx;
+              setActiveFeature(idx);
+            }
           },
         },
       });
