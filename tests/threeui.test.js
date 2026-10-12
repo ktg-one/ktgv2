@@ -8,7 +8,7 @@ test("ThreeUI integration files exist with exact required SHA-256 hashes", () =>
     "src/shaders/neuform-isolated/NeuformCraftEffects.tsx":
       "0a1680c3c119dba8c61d946322afa0b64d36dfd80956fb5e7c3fd017d7bfa450",
     "src/shaders/neuform-isolated/sources/nexus-unified-flow.html":
-      "fa1a015ae407dc2091c3c96239d28107e973cbc03aa7abef37dd5da791d5428b",
+      "e1604441da453f0cc47d29047e717c5ffde70840dec4d38209ff8827563bc395",
     "src/shaders/threeui.css":
       "efe4447139f1358dd8e9be68edf6fa46cbefbd1de423a4d6c439ca61d2c8eccf",
   };
