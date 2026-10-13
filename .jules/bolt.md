@@ -21,3 +21,7 @@
 ## 2026-09-19 - [SSR Storage Access in Render/useMemo]
 **Learning:** Reading `sessionStorage` or `localStorage` during component render or `useMemo` in Next.js SSR components causes a hydration mismatch because the server renders with `window === undefined` (`hasPlayed = false`) while client initial render reads storage (`hasPlayed = true`). This forces React to discard and re-create DOM nodes during client hydration, causing DOM patch thrashing and visual flickers.
 **Action:** Always initialize storage-dependent flags with `useState(false)` and update them inside a `useEffect` hook on client mount.
+
+## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
+**Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
+**Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.

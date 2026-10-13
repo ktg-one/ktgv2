@@ -3,7 +3,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import {
   Accordion,
   AccordionItem,
@@ -33,8 +33,8 @@ export function ValidationSection({ auditData }) {
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
 
-  // Default Data
-  const data = auditData || {
+  // OPTIMIZATION: Memoize data to prevent re-creation on every state change
+  const data = useMemo(() => auditData || {
     c0: {
       title: "Scroll stops",
       body: "shapes still floating. genius.",
@@ -58,10 +58,11 @@ export function ValidationSection({ auditData }) {
       quote:
         "True mastery is not the absence of struggle, but the geometry of it — the careful, intentional architecture of friction through which effort becomes elegance, and elegance, in its highest form, becomes indistinguishable from intuition. To build is to listen. To ship is to believe. To iterate, at last, is to know.",
     },
-  };
+  }, [auditData]);
 
-  // Feature definitions — drives both left card and right accordion
-  const features = [
+  // OPTIMIZATION: Feature definitions — memoized to prevent re-instantiating 5 feature card JSX subtrees
+  // on every scroll scrub tick when activeFeature changes state.
+  const features = useMemo(() => [
     {
       id: "c0",
       label: "00",
@@ -148,17 +149,17 @@ export function ValidationSection({ auditData }) {
         </div>
       ),
     },
-  ];
+  ], [data]);
 
   const NUM_FEATURES = features.length;
 
-  const handleFeatureClick = (index) => {
+  const handleFeatureClick = useCallback((index) => {
     const st = ScrollTrigger.getById("validation-hx");
     if (st) {
       const targetScroll = st.start + (index / (NUM_FEATURES - 1)) * (st.end - st.start);
       window.scrollTo({ top: targetScroll, behavior: "smooth" });
     }
-  };
+  }, [NUM_FEATURES]);
 
   // Check sessionStorage on client side to prevent hydration mismatch
   useEffect(() => {
