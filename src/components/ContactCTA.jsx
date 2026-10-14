@@ -21,7 +21,7 @@ export function ContactCTA() {
           want to try the tool surface first?{" "}
           <Link
             href="/hub/chat"
-            className="text-[#00f0ff]/90 hover:text-[#00f0ff] underline-offset-4 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            className="text-[#00f0ff]/90 hover:text-[#00f0ff] underline-offset-4 hover:underline rounded focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
             open hub chat
           </Link>
