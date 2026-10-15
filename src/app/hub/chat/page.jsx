@@ -631,19 +631,21 @@ export default function HubChat() {
                   }}
                   placeholder="preset name..."
                   autoFocus
-                  className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
+                  aria-label="Preset name"
+                  className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff] placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
                 />
                 <button
                   onClick={savePreset}
-                  className="h-7 border border-[rgba(0,240,255,0.5)] bg-[#00f0ff] px-2 text-xs font-bold lowercase text-black font-[family-name:var(--font-syne)] transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_20px_rgba(0,240,255,0.55),0_0_40px_rgba(0,240,255,0.2)]"
+                  className="h-7 border border-[rgba(0,240,255,0.5)] bg-[#00f0ff] px-2 text-xs font-bold lowercase text-black font-[family-name:var(--font-syne)] transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_20px_rgba(0,240,255,0.55),0_0_40px_rgba(0,240,255,0.2)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                 >
                   save
                 </button>
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
-                  className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel saving preset"
+                  className="p-1.5 text-zinc-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -800,8 +802,9 @@ export default function HubChat() {
                             type="button"
                             onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
                             title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
+                            aria-label={isLoaded ? `Modifier slot ${slotNum}: ${slot.label}` : `Create modifier for slot ${slotNum}`}
                             className={cn(
-                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
+                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]",
                               !isLoaded
                                 ? "border border-dashed border-zinc-700 bg-zinc-950 text-zinc-500 shadow-[0_0_6px_rgba(161,161,170,0.15)] hover:border-zinc-500 hover:text-zinc-300 hover:shadow-[0_0_10px_rgba(161,161,170,0.25)]"
                                 : isActive
@@ -836,6 +839,8 @@ export default function HubChat() {
                   {/* MIDDLE: textarea */}
                   <div className="px-3 py-2.5">
                     <textarea
+                      id="chat-message-input"
+                      aria-label="Chat message input"
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={e => {
@@ -846,7 +851,7 @@ export default function HubChat() {
                       }}
                       placeholder="explore something new..."
                       rows={2}
-                      className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none custom-scrollbar"
+                      className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff] custom-scrollbar"
                       style={{ maxHeight: '200px' }}
                     />
                   </div>
