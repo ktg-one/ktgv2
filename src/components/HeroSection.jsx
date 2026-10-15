@@ -37,7 +37,8 @@ export const HeroSection = forwardRef((props, ref) => {
                   window.removeEventListener('scroll', handleScroll);
               }
           };
-          window.addEventListener('scroll', handleScroll);
+          // OPTIMIZATION: Use passive listener to allow unblocked scrolling on compositor thread
+          window.addEventListener('scroll', handleScroll, { passive: true });
           return () => window.removeEventListener('scroll', handleScroll);
       }
   }, []);

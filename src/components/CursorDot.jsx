@@ -123,7 +123,8 @@ export function CursorDot() {
       }, 2000) // Keep visible for 2s after stop
     }
 
-    window.addEventListener('mousemove', onMouseMove)
+    // OPTIMIZATION: Use passive listener to prevent blocking main thread compositor on high-frequency mousemove events
+    window.addEventListener('mousemove', onMouseMove, { passive: true })
     
     // Cleanup
     return () => {

@@ -155,7 +155,7 @@ export function HeroImages({ topImage, bottomImage }) {
 
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener('resize', checkMobile, { passive: true });
 
     if (window.innerWidth < 768) {
       const timer = setTimeout(() => setIsReady(true), 100);
