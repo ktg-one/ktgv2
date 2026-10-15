@@ -500,7 +500,7 @@ export default function HubChat() {
       {/* LEFT SIDEBAR */}
       <aside
         className={cn(
-          "group absolute z-20 flex h-full w-16 shrink-0 flex-col items-start overflow-hidden border-r border-zinc-800 bg-black py-4 transition-all duration-300 hover:w-56 md:sticky md:top-0 md:h-screen md:self-start",
+          "group absolute z-20 flex h-full w-16 shrink-0 flex-col items-start overflow-hidden border-r border-zinc-800 bg-black py-4 transition-all duration-300 hover:w-56 focus-within:w-56 md:sticky md:top-0 md:h-screen md:self-start",
           CHAT_ASIDE_EDGE,
         )}
       >
@@ -516,26 +516,27 @@ export default function HubChat() {
               priority
             />
           </div>
-          <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">.ktg hub</span>
+          <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-white whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">.ktg hub</span>
         </div>
         <div className="flex-1 w-full flex flex-col gap-1 px-2 overflow-y-auto overflow-x-hidden no-scrollbar">
           {NAV_LINKS.map(link => (
             <a
               key={link.id}
               href={link.href}
+              aria-label={link.label}
               className={cn(
-                "flex w-full items-center gap-3 border border-transparent p-2.5 text-zinc-500",
+                "flex w-full items-center gap-3 border border-transparent p-2.5 text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                 CHAT_ROW_GLOW,
                 link.id === 'chat' &&
                   "border-[rgba(0,240,255,0.35)] bg-[rgba(0,240,255,0.1)] text-[#00f0ff] shadow-[0_0_16px_rgba(0,240,255,0.22),0_0_32px_rgba(0,240,255,0.08)]",
               )}
             >
-              <link.icon className="h-5 w-5 shrink-0" />
-              <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">{link.label}</span>
+              <link.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+              <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">{link.label}</span>
             </a>
           ))}
           <div className="w-full h-px bg-zinc-800 my-2 shrink-0" />
-          <span className="px-2 text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap shrink-0">active skills</span>
+          <span className="px-2 text-[10px] font-[family-name:var(--font-syne)] font-bold lowercase text-zinc-600 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity whitespace-nowrap shrink-0">active skills</span>
           {SKILLS.map(skill => {
             const isActive = activeSkills.includes(skill.id);
             return (
@@ -543,15 +544,16 @@ export default function HubChat() {
                 key={skill.id}
                 onClick={() => toggleSkill(skill.id)}
                 title={skill.name}
+                aria-label={`Toggle skill ${skill.name}`}
                 className={cn(
-                  "flex w-full items-center gap-3 border border-transparent p-2.5 text-zinc-500",
+                  "flex w-full items-center gap-3 border border-transparent p-2.5 text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                   CHAT_ROW_GLOW,
                   isActive &&
                     "border-l-2 border-l-[#00f0ff] border-[rgba(0,240,255,0.25)] bg-[rgba(0,240,255,0.1)] text-[#00f0ff] shadow-[0_0_14px_rgba(0,240,255,0.2)]",
                 )}
               >
-                <skill.icon className="h-5 w-5 shrink-0" />
-                <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">{skill.name}</span>
+                <skill.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span className="font-[family-name:var(--font-syne)] font-bold lowercase text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity">{skill.name}</span>
               </button>
             );
           })}
