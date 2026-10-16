@@ -191,63 +191,31 @@ export function PhilosophySection({ philosophyData }) {
           const chars = word.querySelectorAll(".split-char");
           const len = chars.length;
           if (!len) continue;
+
+          // OPTIMIZATION: Pre-create mapRange mapper functions per word outside character property callbacks.
+          // Re-creating mapRange mappers inside per-character property getters causes redundant function instantiations on every frame / setup tick.
+          const maxIdx = Math.ceil(len / 2);
+          const mapScale = gsap.utils.mapRange(0, maxIdx, 0.5, 2.1);
+          const mapY = gsap.utils.mapRange(0, maxIdx, 0, 60);
+          const mapRotNeg = gsap.utils.mapRange(0, maxIdx, -4, 0);
+          const mapRotPos = gsap.utils.mapRange(0, maxIdx, 0, 4);
+
           gsap.fromTo(
             chars,
             {
               willChange: "transform, filter",
               transformOrigin: "50% 100%",
               scale: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return gsap.utils.mapRange(
-                  0,
-                  Math.ceil(len / 2),
-                  0.5,
-                  2.1,
-                  idx
-                );
+                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                return mapScale(idx);
               },
               y: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return gsap.utils.mapRange(
-                  0,
-                  Math.ceil(len / 2),
-                  0,
-                  60,
-                  idx
-                );
+                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                return mapY(idx);
               },
               rotation: (i) => {
-                const idx =
-                  i < Math.ceil(len / 2)
-                    ? i
-                    : Math.ceil(len / 2) -
-                      Math.abs(Math.floor(len / 2) - i) -
-                      1;
-                return i < len / 2
-                  ? gsap.utils.mapRange(
-                      0,
-                      Math.ceil(len / 2),
-                      -4,
-                      0,
-                      idx
-                    )
-                  : gsap.utils.mapRange(
-                      0,
-                      Math.ceil(len / 2),
-                      0,
-                      4,
-                      idx
-                    );
+                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                return i < len / 2 ? mapRotNeg(idx) : mapRotPos(idx);
               },
               filter: "blur(12px) opacity(0)",
             },
