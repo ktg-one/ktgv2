@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-14 - [High-Frequency Mousemove Timer Allocations]
+**Learning:** Allocating and clearing timers (`setTimeout`/`clearTimeout`) on 1000Hz `mousemove` events causes high GC pressure and main thread CPU churn. When a `requestAnimationFrame` loop is already running, checking high-resolution timestamps (`performance.now()`) inside the RAF loop achieves idle detection with zero allocations.
+**Action:** Avoid `setTimeout`/`clearTimeout` on high-frequency pointer/scroll handlers when an animation frame loop is available.
