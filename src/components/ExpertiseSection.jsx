@@ -19,6 +19,23 @@ const StatBox = ({ label, value, isFloat, suffix }) => (
   </div>
 );
 
+// OPTIMIZATION: Extract default fallback data outside component scope to avoid
+// object/array re-allocations on every render.
+const DEFAULT_EXPERTISE_DATA = [
+  {
+    category: "PROMPT ENGINEERING",
+    skills: ["Context continuation strategies", "Multi-turn conversation optimization", "Chain-of-thought prompting", "Few-shot learning patterns", "Adversarial prompt testing"]
+  },
+  {
+    category: "AI SOLUTIONS [GoodAI]",
+    skills: ["LangChain architecture", "Custom RAG implementations", "Agent-based systems", "Embedding strategies", "Fine-tuning workflows"]
+  },
+  {
+    category: "AI ANTHROPOLOGY",
+    skills: ["Neural Pathway Mapping", "Cognitive Software Engineering", "Reverse-Engineering Engines", "Anti-Lazy Protocols", "Hallucination Management"]
+  },
+];
+
 export const ExpertiseSection = forwardRef(({ expertiseData }, ref) => {
   const containerRef = useRef(null);
   const contentRef = useRef(null); // Wrapper for pinned content
@@ -26,21 +43,7 @@ export const ExpertiseSection = forwardRef(({ expertiseData }, ref) => {
   const internalRef = ref || containerRef;
   const [hasPlayed, setHasPlayed] = useState(false);
 
-  // Default Fallback Data
-  const data = expertiseData || [
-    {
-      category: "PROMPT ENGINEERING",
-      skills: ["Context continuation strategies", "Multi-turn conversation optimization", "Chain-of-thought prompting", "Few-shot learning patterns", "Adversarial prompt testing"]
-    },
-    {
-      category: "AI SOLUTIONS [GoodAI]",
-      skills: ["LangChain architecture", "Custom RAG implementations", "Agent-based systems", "Embedding strategies", "Fine-tuning workflows"]
-    },
-    {
-      category: "AI ANTHROPOLOGY",
-      skills: ["Neural Pathway Mapping", "Cognitive Software Engineering", "Reverse-Engineering Engines", "Anti-Lazy Protocols", "Hallucination Management"]
-    },
-  ];
+  const data = expertiseData || DEFAULT_EXPERTISE_DATA;
 
   // OPTIMIZATION: Check sessionStorage only on client side to prevent hydration mismatch
   useEffect(() => {

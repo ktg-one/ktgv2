@@ -1,10 +1,12 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, memo } from "react";
 import gsap from "gsap";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
-export function GlitchText({ children, className = "" }) {
+// OPTIMIZATION: Memoized with React.memo to prevent unnecessary re-renders and DOM element recreation
+// during high-frequency parent state updates (e.g. scroll scrubbing in ValidationSection).
+export const GlitchText = memo(function GlitchText({ children, className = "" }) {
   const ref = useRef(null);
   const reduced = usePrefersReducedMotion();
 
@@ -42,4 +44,4 @@ export function GlitchText({ children, className = "" }) {
       </span>
     </span>
   );
-}
+});
