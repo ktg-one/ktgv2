@@ -357,7 +357,7 @@ export function PhilosophySection({ philosophyData }) {
           <div className="pt-8">
             <Link
               href="/blog"
-              className="text-xs text-white/30 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest"
+              className="text-xs text-white/30 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded"
             >
               read insights
             </Link>
