@@ -10,38 +10,41 @@ import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// OPTIMIZATION: Move static fallback data out of component to prevent re-allocation on every render
+const DEFAULT_PHILOSOPHY_DATA = {
+  heading: {
+    line1: "synthesis",
+    line2: "over",
+    line3: "specialization",
+  },
+  description: [
+    "Seven careers aren't seven separate lives. They're seven lenses on the same problem: how to synthesize complexity into clarity.",
+    "From the precision of a pilot to the creativity of sound engineering, from market dynamics to human teaching—each domain taught a different dimension of problem-solving.",
+    "AI is where they all converge.",
+  ],
+  quotes: [
+    {
+      text: "Don't just evaluate... collaborate.",
+      label: "PRINCIPLE 01",
+    },
+    {
+      text: "Ideation. Brainstorm. Implement. Test. Evaluate. Feedback. Iterate",
+      label: "PRINCIPLE 02",
+    },
+    {
+      text: "'Each LLM is wildly unique with patterned traits & features' - April 2024",
+      label: "PRINCIPLE 03",
+    },
+  ],
+};
+
 export function PhilosophySection({ philosophyData }) {
   const sectionRef = useRef(null);
   const textRef = useRef(null);
   const quoteRefs = useRef([]);
   const reducedMotion = usePrefersReducedMotion();
 
-  const data = philosophyData || {
-    heading: {
-      line1: "synthesis",
-      line2: "over",
-      line3: "specialization",
-    },
-    description: [
-      "Seven careers aren't seven separate lives. They're seven lenses on the same problem: how to synthesize complexity into clarity.",
-      "From the precision of a pilot to the creativity of sound engineering, from market dynamics to human teaching—each domain taught a different dimension of problem-solving.",
-      "AI is where they all converge.",
-    ],
-    quotes: [
-      {
-        text: "Don't just evaluate... collaborate.",
-        label: "PRINCIPLE 01",
-      },
-      {
-        text: "Ideation. Brainstorm. Implement. Test. Evaluate. Feedback. Iterate",
-        label: "PRINCIPLE 02",
-      },
-      {
-        text: "'Each LLM is wildly unique with patterned traits & features' - April 2024",
-        label: "PRINCIPLE 03",
-      },
-    ],
-  };
+  const data = philosophyData || DEFAULT_PHILOSOPHY_DATA;
 
   useGSAP(
     () => {
@@ -146,16 +149,15 @@ export function PhilosophySection({ philosophyData }) {
       }
 
       // --- Quote 2: Tympanus Effect 21 — chars explode from center with depth per word ---
+      // OPTIMIZATION: Attach ScrollTrigger to container q2 instead of looping per-word (reduces 7 ScrollTriggers to 1)
       const q2 = quoteRefs.current[1];
       if (q2) {
         const words = [...q2.querySelectorAll(".split-word")];
-        // OPTIMIZATION: Batch set perspective on all word containers once outside the loop
         if (words.length) {
           gsap.set(words, { perspective: 2000 });
         }
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          if (!chars.length) continue;
+        const chars = q2.querySelectorAll(".split-char");
+        if (chars.length) {
           gsap.fromTo(
             chars,
             {
@@ -171,11 +173,11 @@ export function PhilosophySection({ philosophyData }) {
               y: 0,
               z: 0,
               rotationX: 0,
-              stagger: { each: 0.06, from: "center" },
+              stagger: { each: 0.03, from: "center" },
               scrollTrigger: {
-                trigger: word,
+                trigger: q2,
                 start: "top bottom",
-                end: "top top+=15%",
+                end: "bottom top+=20%",
                 scrub: true,
               },
             }
@@ -184,13 +186,12 @@ export function PhilosophySection({ philosophyData }) {
       }
 
       // --- Quote 3: Tympanus Effect 28 — scale + rotation + blur fan-out per word ---
+      // OPTIMIZATION: Attach ScrollTrigger to container q3 instead of looping per-word (reduces 12 ScrollTriggers to 1)
       const q3 = quoteRefs.current[2];
       if (q3) {
-        const words = [...q3.querySelectorAll(".split-word")];
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          const len = chars.length;
-          if (!len) continue;
+        const chars = q3.querySelectorAll(".split-char");
+        const len = chars.length;
+        if (len) {
           gsap.fromTo(
             chars,
             {
@@ -258,9 +259,9 @@ export function PhilosophySection({ philosophyData }) {
               scale: 1,
               filter: "blur(0px) opacity(1)",
               scrollTrigger: {
-                trigger: word,
-                start: "top bottom+=40%",
-                end: "top top+=15%",
+                trigger: q3,
+                start: "top bottom-=10%",
+                end: "bottom top+=20%",
                 scrub: true,
               },
               stagger: { amount: 0.15, from: "center" },

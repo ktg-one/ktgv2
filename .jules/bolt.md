@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-14 - [Container-Level GSAP ScrollTriggers]
+**Learning:** Instantiating individual GSAP `ScrollTrigger` instances inside per-word loops (e.g. for split-text quote animations) multiplies scroll observer counts and layout bounds checking by the number of words (creating 19+ triggers vs 2).
+**Action:** Always attach `ScrollTrigger` scrub animations to parent/container elements (`q2`, `q3`) and target child `.split-char` nodes with stagger under a single trigger.
