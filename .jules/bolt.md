@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-19 - [Consolidating Per-Element ScrollTriggers]
+**Learning:** Creating individual `ScrollTrigger` instances in a loop for multiple sub-elements (like words in quotes) forces GSAP to track and evaluate dozens of separate scroll bounds and scrub targets per frame.
+**Action:** Group sub-element animations into a single `gsap.timeline` with a single `ScrollTrigger` attached to the parent container element, using relative sequence offsets (`"<0.08"`) to maintain stagger effects while reducing active ScrollTrigger instances by ~90%.
