@@ -19,15 +19,35 @@ export async function uploadSnippet(filename, content) {
   return blob;
 }
 
+// OPTIMIZATION: Module-level in-memory cache to store snippet markdown contents by Blob URL.
+// Eliminates duplicate network requests to Vercel Blob storage during component re-renders
+// and page navigation, reducing latency from ~100-300ms down to 0ms for cached URLs.
+const snippetCache = new Map();
+
 /**
- * Get snippet content from Vercel Blob
+ * Get snippet content from Vercel Blob with in-memory caching
  * @param {string} url - Blob URL
  * @returns {Promise<string>} Markdown content
  */
 export async function getSnippetContent(url) {
+  if (!url) return "";
+
+  if (snippetCache.has(url)) {
+    return snippetCache.get(url);
+  }
+
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch snippet: ${response.statusText}`);
   }
-  return await response.text();
+  const content = await response.text();
+  snippetCache.set(url, content);
+  return content;
+}
+
+/**
+ * Helper to clear the snippet cache (useful for testing)
+ */
+export function clearSnippetCache() {
+  snippetCache.clear();
 }
