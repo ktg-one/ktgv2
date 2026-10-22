@@ -3,45 +3,50 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef } from "react";
+import { useRef, memo } from "react";
 import Link from "next/link";
 import { SplitText } from "@/components/SplitText";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function PhilosophySection({ philosophyData }) {
+// OPTIMIZATION: Extract default static fallback data structure outside component scope
+// to avoid re-allocating nested objects and arrays on every render pass.
+const DEFAULT_PHILOSOPHY_DATA = {
+  heading: {
+    line1: "synthesis",
+    line2: "over",
+    line3: "specialization",
+  },
+  description: [
+    "Seven careers aren't seven separate lives. They're seven lenses on the same problem: how to synthesize complexity into clarity.",
+    "From the precision of a pilot to the creativity of sound engineering, from market dynamics to human teaching—each domain taught a different dimension of problem-solving.",
+    "AI is where they all converge.",
+  ],
+  quotes: [
+    {
+      text: "Don't just evaluate... collaborate.",
+      label: "PRINCIPLE 01",
+    },
+    {
+      text: "Ideation. Brainstorm. Implement. Test. Evaluate. Feedback. Iterate",
+      label: "PRINCIPLE 02",
+    },
+    {
+      text: "'Each LLM is wildly unique with patterned traits & features' - April 2024",
+      label: "PRINCIPLE 03",
+    },
+  ],
+};
+
+// OPTIMIZATION: Wrapped in React.memo to prevent unnecessary component re-renders
+export const PhilosophySection = memo(function PhilosophySection({ philosophyData }) {
   const sectionRef = useRef(null);
   const textRef = useRef(null);
   const quoteRefs = useRef([]);
   const reducedMotion = usePrefersReducedMotion();
 
-  const data = philosophyData || {
-    heading: {
-      line1: "synthesis",
-      line2: "over",
-      line3: "specialization",
-    },
-    description: [
-      "Seven careers aren't seven separate lives. They're seven lenses on the same problem: how to synthesize complexity into clarity.",
-      "From the precision of a pilot to the creativity of sound engineering, from market dynamics to human teaching—each domain taught a different dimension of problem-solving.",
-      "AI is where they all converge.",
-    ],
-    quotes: [
-      {
-        text: "Don't just evaluate... collaborate.",
-        label: "PRINCIPLE 01",
-      },
-      {
-        text: "Ideation. Brainstorm. Implement. Test. Evaluate. Feedback. Iterate",
-        label: "PRINCIPLE 02",
-      },
-      {
-        text: "'Each LLM is wildly unique with patterned traits & features' - April 2024",
-        label: "PRINCIPLE 03",
-      },
-    ],
-  };
+  const data = philosophyData || DEFAULT_PHILOSOPHY_DATA;
 
   useGSAP(
     () => {
@@ -334,4 +339,4 @@ export function PhilosophySection({ philosophyData }) {
       </div>
     </section>
   );
-}
+});
