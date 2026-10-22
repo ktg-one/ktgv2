@@ -7,6 +7,12 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export function SnippetViewer({ snippet, content }) {
   const [copied, setCopied] = useState(false);
@@ -60,20 +66,28 @@ export function SnippetViewer({ snippet, content }) {
       {/* Content display */}
       <Card className="min-h-[600px] bg-[#0a0a0a]">
         <div className="flex items-center justify-end border-b border-border px-4 py-3">
-          <Button
-            onClick={handleCopy}
-            variant="ghost"
-            size="sm"
-            className="h-8 w-8 p-0"
-            aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
-            title={copied ? "Copied snippet code" : "Copy snippet code"}
-          >
-            {copied ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )}
-          </Button>
+          <TooltipProvider delayDuration={100}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  onClick={handleCopy}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
+                  aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="text-xs">
+                {copied ? "Copied!" : "Copy code"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <CardContent className="h-[calc(100%-49px)] overflow-auto p-6">
           <div className="prose prose-invert prose-sm max-w-none">
