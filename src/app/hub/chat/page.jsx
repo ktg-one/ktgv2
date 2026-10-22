@@ -137,7 +137,7 @@ const NAV_LINKS = [
 const CHAT_ROW_GLOW =
   "transition-all duration-300 border border-transparent hover:border-[rgba(0,240,255,0.28)] hover:bg-[rgba(0,240,255,0.06)] hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.22),0_0_28px_rgba(0,240,255,0.08)]";
 const CHAT_ICON_BTN =
-  "border border-zinc-800 transition-all duration-300 hover:border-[rgba(0,240,255,0.4)] hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.08)] hover:shadow-[0_0_20px_rgba(0,240,255,0.3),0_0_40px_rgba(0,240,255,0.12)]";
+  "border border-zinc-800 transition-all duration-300 hover:border-[rgba(0,240,255,0.4)] hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.08)] hover:shadow-[0_0_20px_rgba(0,240,255,0.3),0_0_40px_rgba(0,240,255,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black";
 const CHAT_ASIDE_EDGE =
   "transition-[border-color,box-shadow] duration-300 hover:border-[rgba(0,240,255,0.22)] hover:shadow-[inset_-4px_0_28px_-6px_rgba(0,240,255,0.14)]";
 
@@ -630,20 +630,22 @@ export default function HubChat() {
                     if (e.key === 'Escape') { setIsSavingPreset(false); setPresetNameInput(''); }
                   }}
                   placeholder="preset name..."
+                  aria-label="Preset name"
                   autoFocus
-                  className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
+                  className="h-7 w-36 bg-zinc-900 border border-[#00f0ff] px-2 text-xs text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] placeholder:text-zinc-600 font-[family-name:var(--font-syne)]"
                 />
                 <button
                   onClick={savePreset}
-                  className="h-7 border border-[rgba(0,240,255,0.5)] bg-[#00f0ff] px-2 text-xs font-bold lowercase text-black font-[family-name:var(--font-syne)] transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_20px_rgba(0,240,255,0.55),0_0_40px_rgba(0,240,255,0.2)]"
+                  className="h-7 border border-[rgba(0,240,255,0.5)] bg-[#00f0ff] px-2 text-xs font-bold lowercase text-black font-[family-name:var(--font-syne)] transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_20px_rgba(0,240,255,0.55),0_0_40px_rgba(0,240,255,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black"
                 >
                   save
                 </button>
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
-                  className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel saving preset"
+                  className="p-1.5 text-zinc-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff]"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -845,8 +847,9 @@ export default function HubChat() {
                         }
                       }}
                       placeholder="explore something new..."
+                      aria-label="Chat prompt"
                       rows={2}
-                      className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none custom-scrollbar"
+                      className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] rounded-sm custom-scrollbar"
                       style={{ maxHeight: '200px' }}
                     />
                   </div>
@@ -856,7 +859,7 @@ export default function HubChat() {
                     <div className="flex items-center gap-0.5 pt-2">
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff]"
                         title="upload file"
                         aria-label="Upload file"
                       >
@@ -864,7 +867,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff]"
                         title="connect to drive"
                         aria-label="Connect to Drive"
                       >
@@ -872,7 +875,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff]"
                         title="share"
                         aria-label="Share chat"
                       >
