@@ -176,6 +176,7 @@ export function getFeaturedImage(post) {
 // Format date
 export function formatDate(dateString) {
   if (!dateString) return '';
+  if (typeof dateString !== 'string' && !(dateString instanceof Date)) return '';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '';
