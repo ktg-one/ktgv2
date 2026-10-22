@@ -64,9 +64,9 @@ export default function SnippetDetailPage() {
       <div className="max-w-4xl mx-auto">
         <Link
           href="/hub/snippets"
-          className="mb-8 inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+          className="mb-8 inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
         >
-          <ArrowLeft className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
           Back to snippets
         </Link>
         <SnippetViewer snippet={snippet} content={content} />
