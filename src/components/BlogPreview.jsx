@@ -80,7 +80,7 @@ export function BlogPreview({ posts = [] }) {
           </div>
           <Link
             href="/blog"
-            className="hidden md:inline-block text-xs md:text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest uppercase"
+            className="hidden md:inline-block text-xs md:text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white pb-1 tracking-widest uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-xs"
           >
             view all &rarr;
           </Link>
@@ -106,16 +106,16 @@ export function BlogPreview({ posts = [] }) {
               <Link
                 key={post.id}
                 href={`/blog/${post.slug}`}
-                className={`blog-card group ${colSpan}`}
+                className={`blog-card group ${colSpan} rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black`}
               >
-                <article className="h-full flex flex-col border border-white/10 hover:border-white/30 transition-all duration-300 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-white/5">
+                <article className="h-full flex flex-col border border-white/10 group-hover:border-white/30 group-focus-visible:border-white/30 transition-all duration-300 backdrop-blur-sm rounded-xl overflow-hidden group-hover:bg-white/5 group-focus-visible:bg-white/5">
                   {featuredImage && (
                     <div className={`relative w-full ${imgHeight} shrink-0 overflow-hidden bg-white/5`}>
                       <Image
                         src={featuredImage}
                         alt={title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                        className="object-cover group-hover:scale-105 group-focus-visible:scale-105 transition-transform duration-700 ease-out"
                         sizes={tier === 'lg' ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
                         loading={index < 3 ? "eager" : "lazy"}
                       />
@@ -133,10 +133,10 @@ export function BlogPreview({ posts = [] }) {
                           {formatDate(post.date)}
                         </time>
                       )}
-                      <span className="w-2 h-2 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 transition-colors" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 group-focus-visible:bg-emerald-400 transition-colors" />
                     </div>
 
-                    <h3 className={`font-syne font-bold mb-3 lowercase group-hover:text-white/80 transition-colors leading-tight ${tier === 'lg' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}`}>
+                    <h3 className={`font-syne font-bold mb-3 lowercase group-hover:text-white/80 group-focus-visible:text-white/80 transition-colors leading-tight ${tier === 'lg' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}`}>
                       {title}
                     </h3>
 
@@ -147,10 +147,10 @@ export function BlogPreview({ posts = [] }) {
                     )}
 
                     <div className="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
-                      <span className="text-white/30 text-xs tracking-wider group-hover:text-white/70 transition-colors">
+                      <span className="text-white/30 text-xs tracking-wider group-hover:text-white/70 group-focus-visible:text-white/70 transition-colors">
                         read entry
                       </span>
-                      <span className="text-white/30 group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+                      <span className="text-white/30 group-hover:translate-x-1 group-focus-visible:translate-x-1 transition-transform duration-300">&rarr;</span>
                     </div>
                   </div>
                 </article>
@@ -163,7 +163,7 @@ export function BlogPreview({ posts = [] }) {
         <div className="mt-12 text-center md:hidden">
           <Link
             href="/blog"
-            className="inline-block text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white/30"
+            className="inline-block text-sm text-white/50 hover:text-white transition-colors border-b border-transparent hover:border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-xs"
           >
             view all posts &rarr;
           </Link>
