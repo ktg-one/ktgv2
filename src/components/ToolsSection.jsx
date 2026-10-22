@@ -22,7 +22,8 @@ export function ToolsSection() {
     // Set initial state
     gsap.set(cards, { opacity: 0, y: 50 });
 
-    // Staggered reveal animation
+    // OPTIMIZATION: Use `overwrite: "auto"` and `fastScrollEnd: true` in ScrollTrigger.batch to prevent
+    // redundant tween conflict handling and avoid wasted animation calculations when scrolling quickly past cards.
     ScrollTrigger.batch(cards, {
       onEnter: (elements) => {
         gsap.to(elements, {
@@ -31,9 +32,10 @@ export function ToolsSection() {
           stagger: 0.15,
           duration: 0.8,
           ease: "power2.out",
-          overwrite: true
+          overwrite: "auto"
         });
       },
+      fastScrollEnd: true,
       start: "top 85%",
       once: true
     });
