@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-14 - [ScrollTrigger onUpdate State Guarding]
+**Learning:** Calling React state setters (e.g. `setActiveFeature(idx)`) unconditionally inside high-frequency `ScrollTrigger.onUpdate` callbacks (60–120Hz) dispatches hundreds of redundant state update checks during scroll scrubbing.
+**Action:** Guard state dispatch inside high-frequency scroll listeners with a `useRef` comparison check (`if (activeRef.current !== idx) { activeRef.current = idx; setState(idx); }`) so state updates are only dispatched when discrete values actually transition.
