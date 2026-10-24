@@ -149,37 +149,41 @@ export function PhilosophySection({ philosophyData }) {
       const q2 = quoteRefs.current[1];
       if (q2) {
         const words = [...q2.querySelectorAll(".split-word")];
-        // OPTIMIZATION: Batch set perspective on all word containers once outside the loop
         if (words.length) {
           gsap.set(words, { perspective: 2000 });
-        }
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          if (!chars.length) continue;
-          gsap.fromTo(
-            chars,
-            {
-              willChange: "opacity, transform",
-              opacity: 0,
-              y: (i, _el, arr) => -40 * Math.abs(i - arr.length / 2),
-              z: () => gsap.utils.random(-1500, -600),
-              rotationX: () => gsap.utils.random(-500, -200),
+          // OPTIMIZATION: Consolidate per-word ScrollTriggers into a single timeline with 1 ScrollTrigger
+          // on parent container q2. Reduces ScrollTrigger instances from 7 down to 1.
+          const q2Tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: q2,
+              start: "top bottom",
+              end: "bottom top+=15%",
+              scrub: true,
             },
-            {
-              ease: "power1.inOut",
-              opacity: 1,
-              y: 0,
-              z: 0,
-              rotationX: 0,
-              stagger: { each: 0.06, from: "center" },
-              scrollTrigger: {
-                trigger: word,
-                start: "top bottom",
-                end: "top top+=15%",
-                scrub: true,
+          });
+          for (const word of words) {
+            const chars = word.querySelectorAll(".split-char");
+            if (!chars.length) continue;
+            q2Tl.fromTo(
+              chars,
+              {
+                willChange: "opacity, transform",
+                opacity: 0,
+                y: (i, _el, arr) => -40 * Math.abs(i - arr.length / 2),
+                z: () => gsap.utils.random(-1500, -600),
+                rotationX: () => gsap.utils.random(-500, -200),
               },
-            }
-          );
+              {
+                ease: "power1.inOut",
+                opacity: 1,
+                y: 0,
+                z: 0,
+                rotationX: 0,
+                stagger: { each: 0.06, from: "center" },
+              },
+              0
+            );
+          }
         }
       }
 
@@ -187,53 +191,58 @@ export function PhilosophySection({ philosophyData }) {
       const q3 = quoteRefs.current[2];
       if (q3) {
         const words = [...q3.querySelectorAll(".split-word")];
-        for (const word of words) {
-          const chars = word.querySelectorAll(".split-char");
-          const len = chars.length;
-          if (!len) continue;
-
-          // OPTIMIZATION: Pre-create mapRange mapper functions per word outside character property callbacks.
-          // Re-creating mapRange mappers inside per-character property getters causes redundant function instantiations on every frame / setup tick.
-          const maxIdx = Math.ceil(len / 2);
-          const mapScale = gsap.utils.mapRange(0, maxIdx, 0.5, 2.1);
-          const mapY = gsap.utils.mapRange(0, maxIdx, 0, 60);
-          const mapRotNeg = gsap.utils.mapRange(0, maxIdx, -4, 0);
-          const mapRotPos = gsap.utils.mapRange(0, maxIdx, 0, 4);
-
-          gsap.fromTo(
-            chars,
-            {
-              willChange: "transform, filter",
-              transformOrigin: "50% 100%",
-              scale: (i) => {
-                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
-                return mapScale(idx);
-              },
-              y: (i) => {
-                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
-                return mapY(idx);
-              },
-              rotation: (i) => {
-                const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
-                return i < len / 2 ? mapRotNeg(idx) : mapRotPos(idx);
-              },
-              filter: "blur(12px) opacity(0)",
+        if (words.length) {
+          // OPTIMIZATION: Consolidate per-word ScrollTriggers into a single timeline with 1 ScrollTrigger
+          // on parent container q3. Reduces ScrollTrigger instances from 12 down to 1.
+          const q3Tl = gsap.timeline({
+            scrollTrigger: {
+              trigger: q3,
+              start: "top bottom+=40%",
+              end: "bottom top+=15%",
+              scrub: true,
             },
-            {
-              ease: "power2.inOut",
-              y: 0,
-              rotation: 0,
-              scale: 1,
-              filter: "blur(0px) opacity(1)",
-              scrollTrigger: {
-                trigger: word,
-                start: "top bottom+=40%",
-                end: "top top+=15%",
-                scrub: true,
+          });
+          for (const word of words) {
+            const chars = word.querySelectorAll(".split-char");
+            const len = chars.length;
+            if (!len) continue;
+
+            const maxIdx = Math.ceil(len / 2);
+            const mapScale = gsap.utils.mapRange(0, maxIdx, 0.5, 2.1);
+            const mapY = gsap.utils.mapRange(0, maxIdx, 0, 60);
+            const mapRotNeg = gsap.utils.mapRange(0, maxIdx, -4, 0);
+            const mapRotPos = gsap.utils.mapRange(0, maxIdx, 0, 4);
+
+            q3Tl.fromTo(
+              chars,
+              {
+                willChange: "transform, filter",
+                transformOrigin: "50% 100%",
+                scale: (i) => {
+                  const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                  return mapScale(idx);
+                },
+                y: (i) => {
+                  const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                  return mapY(idx);
+                },
+                rotation: (i) => {
+                  const idx = i < maxIdx ? i : maxIdx - Math.abs(Math.floor(len / 2) - i) - 1;
+                  return i < len / 2 ? mapRotNeg(idx) : mapRotPos(idx);
+                },
+                filter: "blur(12px) opacity(0)",
               },
-              stagger: { amount: 0.15, from: "center" },
-            }
-          );
+              {
+                ease: "power2.inOut",
+                y: 0,
+                rotation: 0,
+                scale: 1,
+                filter: "blur(0px) opacity(1)",
+                stagger: { amount: 0.15, from: "center" },
+              },
+              0
+            );
+          }
         }
       }
 
