@@ -3,12 +3,15 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getFeaturedImage, formatDate } from "@/lib/wordpress";
 
 gsap.registerPlugin(ScrollTrigger);
+
+// OPTIMIZATION: Extract tierPattern to module scope to avoid re-allocating array on every component render
+const TIER_PATTERN = ['lg', 'md', 'sm', 'md', 'sm', 'md'];
 
 export function BlogPreview({ posts = [] }) {
   const sectionRef = useRef(null);
@@ -49,7 +52,51 @@ export function BlogPreview({ posts = [] }) {
     });
   }, { scope: sectionRef, dependencies: [hasPlayed] });
 
-  if (!posts || posts.length === 0) {
+  // OPTIMIZATION: Memoize post formatting, HTML tag stripping regex, date conversions, and grid layout spans.
+  // Prevents re-running string manipulation and date parsing on every render pass when hasPlayed state
+  // changes or parent re-renders.
+  const formattedPosts = useMemo(() => {
+    if (!Array.isArray(posts) || posts.length === 0) return [];
+
+    return posts
+      .map((post, index) => {
+        if (!post || (!post.title && !post.id)) return null;
+
+        const featuredImage = getFeaturedImage(post);
+        const rawExcerpt = post.excerpt?.rendered || post.excerpt || "";
+        const excerpt = rawExcerpt
+          ? rawExcerpt.replace(/<[^>]*>/g, "").substring(0, 120) + "..."
+          : "";
+        const title = post.title?.rendered || post.title || "Untitled";
+        const tier = TIER_PATTERN[index] || "sm";
+
+        const colSpan =
+          tier === "lg" ? "md:col-span-8" : tier === "md" ? "md:col-span-4" : "md:col-span-4";
+        const imgHeight =
+          tier === "lg" ? "h-64 md:h-80" : tier === "md" ? "h-48 md:h-56" : "h-40 md:h-48";
+
+        const isoDate = post.date ? new Date(post.date).toISOString() : null;
+        const displayDate = post.date ? formatDate(post.date) : null;
+
+        return {
+          id: post.id || index,
+          slug: post.slug,
+          date: post.date,
+          isoDate,
+          displayDate,
+          title,
+          excerpt,
+          featuredImage,
+          tier,
+          colSpan,
+          imgHeight,
+          index,
+        };
+      })
+      .filter(Boolean);
+  }, [posts]);
+
+  if (!formattedPosts || formattedPosts.length === 0) {
     return (
       <section ref={sectionRef} data-blog-section className="relative py-24 px-6 text-white z-[60]" suppressHydrationWarning>
         <div className="max-w-7xl mx-auto w-full">
@@ -59,9 +106,6 @@ export function BlogPreview({ posts = [] }) {
       </section>
     );
   }
-
-  // Tiered sizes: first card is large (featured), rest alternate medium/small
-  const tierPattern = ['lg', 'md', 'sm', 'md', 'sm', 'md'];
 
   return (
     <section
@@ -88,36 +132,23 @@ export function BlogPreview({ posts = [] }) {
 
         {/* Tiered Card Grid */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8">
-          {posts.map((post, index) => {
-            if (!post || !post.title) return null;
-
-            const featuredImage = getFeaturedImage(post);
-            const excerpt = (post.excerpt?.rendered || post.excerpt || '')
-              .replace(/<[^>]*>/g, "")
-              .substring(0, 120) + "...";
-            const title = post.title?.rendered || post.title || 'Untitled';
-            const tier = tierPattern[index] || 'sm';
-
-            // Grid span based on tier
-            const colSpan = tier === 'lg' ? 'md:col-span-8' : tier === 'md' ? 'md:col-span-4' : 'md:col-span-4';
-            const imgHeight = tier === 'lg' ? 'h-64 md:h-80' : tier === 'md' ? 'h-48 md:h-56' : 'h-40 md:h-48';
-
+          {formattedPosts.map((post) => {
             return (
               <Link
                 key={post.id}
                 href={`/blog/${post.slug}`}
-                className={`blog-card group ${colSpan}`}
+                className={`blog-card group ${post.colSpan}`}
               >
                 <article className="h-full flex flex-col border border-white/10 hover:border-white/30 transition-all duration-300 backdrop-blur-sm rounded-xl overflow-hidden hover:bg-white/5">
-                  {featuredImage && (
-                    <div className={`relative w-full ${imgHeight} shrink-0 overflow-hidden bg-white/5`}>
+                  {post.featuredImage && (
+                    <div className={`relative w-full ${post.imgHeight} shrink-0 overflow-hidden bg-white/5`}>
                       <Image
-                        src={featuredImage}
-                        alt={title}
+                        src={post.featuredImage}
+                        alt={post.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                        sizes={tier === 'lg' ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
-                        loading={index < 3 ? "eager" : "lazy"}
+                        sizes={post.tier === 'lg' ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, 33vw"}
+                        loading={post.index < 3 ? "eager" : "lazy"}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-50" />
                     </div>
@@ -125,24 +156,24 @@ export function BlogPreview({ posts = [] }) {
 
                   <div className="p-5 md:p-6 flex-1 flex flex-col">
                     <div className="flex justify-between items-start mb-3">
-                      {post.date && (
+                      {post.displayDate && (
                         <time
                           className="text-white/40 text-xs font-mono tracking-widest"
-                          dateTime={new Date(post.date).toISOString()}
+                          dateTime={post.isoDate}
                         >
-                          {formatDate(post.date)}
+                          {post.displayDate}
                         </time>
                       )}
                       <span className="w-2 h-2 rounded-full bg-emerald-500/50 group-hover:bg-emerald-400 transition-colors" />
                     </div>
 
-                    <h3 className={`font-syne font-bold mb-3 lowercase group-hover:text-white/80 transition-colors leading-tight ${tier === 'lg' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}`}>
-                      {title}
+                    <h3 className={`font-syne font-bold mb-3 lowercase group-hover:text-white/80 transition-colors leading-tight ${post.tier === 'lg' ? 'text-2xl md:text-3xl' : 'text-lg md:text-xl'}`}>
+                      {post.title}
                     </h3>
 
-                    {tier !== 'sm' && excerpt && (
+                    {post.tier !== 'sm' && post.excerpt && (
                       <p className="text-white/50 text-sm mb-4 line-clamp-3 leading-relaxed">
-                        {excerpt}
+                        {post.excerpt}
                       </p>
                     )}
 
