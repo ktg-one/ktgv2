@@ -32,6 +32,7 @@ export function ValidationSection({ auditData }) {
   const cardRefs = useRef([]);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+  const activeFeatureRef = useRef(0);
 
   // OPTIMIZATION: Memoize data to prevent re-creation on every state change
   const data = useMemo(() => auditData || {
@@ -236,7 +237,12 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: Only dispatch React state update when active index actually changes.
+            // Avoids calling setActiveFeature 60-120x/sec during scroll scrubbing when the active card index hasn't changed.
+            if (activeFeatureRef.current !== idx) {
+              activeFeatureRef.current = idx;
+              setActiveFeature(idx);
+            }
           },
         },
       });
