@@ -23,14 +23,18 @@ export function GalleryFormation() {
 
     const items = gsap.utils.toArray(gridRef.current.children);
 
-    // Set Initial "Floating" State (Chaos)
-    gsap.set(items, {
-        x: () => Math.random() * 1500 - 750,
-        y: () => Math.random() * 2000 - 1000,
-        z: () => Math.random() * 500 - 250,
-        rotation: () => Math.random() * 90 - 45,
+    // OPTIMIZATION: Pre-calculate initial random offsets once per setup.
+    // Dynamic getter functions with Math.random() cause GSAP to re-evaluate and re-allocate random values
+    // on every ScrollTrigger.refresh() cycle (e.g. window resize or layout updates).
+    items.forEach((item) => {
+      gsap.set(item, {
+        x: Math.random() * 1500 - 750,
+        y: Math.random() * 2000 - 1000,
+        z: Math.random() * 500 - 250,
+        rotation: Math.random() * 90 - 45,
         opacity: 0,
-        scale: 0.6
+        scale: 0.6,
+      });
     });
 
     // The Formation (Order)
