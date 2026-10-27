@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-14 - [Static Random Property Values in GSAP Setup]
+**Learning:** Supplying dynamic getter functions with `Math.random()` to `gsap.set()` (e.g. `x: () => Math.random() * 1500 - 750`) forces GSAP to re-evaluate the function callbacks whenever `ScrollTrigger.refresh()` runs (such as window resizes or Lenis layout recalculations). This causes unnecessary function allocations and unintended layout shifts on refresh cycles.
+**Action:** Evaluate static random offset values directly during setup inside `forEach` or pre-computed arrays when constant initial positioning is intended.
