@@ -40,7 +40,7 @@ export function SnippetViewer({ snippet, content }) {
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className="shrink-0"
+          className="shrink-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           aria-label={copied ? "Snippet copied to clipboard" : "Copy snippet code"}
         >
           {copied ? (
@@ -64,7 +64,7 @@ export function SnippetViewer({ snippet, content }) {
             onClick={handleCopy}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
             title={copied ? "Copied snippet code" : "Copy snippet code"}
           >
