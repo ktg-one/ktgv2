@@ -594,7 +594,7 @@ export default function HubChat() {
                     onClick={e => { e.preventDefault(); setIsPersonaModalOpen(true); }}
                     className="w-full flex items-center gap-2 px-2 py-1.5 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 font-[family-name:var(--font-syne)] lowercase"
                   >
-                    <Plus className="h-3.5 w-3.5" /> new persona
+                    <Plus className="h-3.5 w-3.5" aria-hidden="true" /> new persona
                   </button>
                 </SelectContent>
               </Select>
@@ -642,8 +642,9 @@ export default function HubChat() {
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
                   className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel saving preset"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -1168,8 +1169,11 @@ export default function HubChat() {
                   />
                 </div>
               ))}
-              <button className="w-full flex items-center justify-center gap-2 p-3 border border-dashed border-zinc-700 hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/5 text-zinc-500 transition-all">
-                <Plus className="h-4 w-4" />
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 p-3 border border-dashed border-zinc-700 hover:border-[#00f0ff] hover:text-[#00f0ff] hover:bg-[#00f0ff]/5 text-zinc-500 transition-all"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
                 <span className="text-xs font-[family-name:var(--font-syne)] font-bold lowercase">add mcp server</span>
               </button>
             </div>
