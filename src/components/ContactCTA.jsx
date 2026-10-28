@@ -39,19 +39,20 @@ export function ContactCTA() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-white/60 text-xs tracking-widest font-syne">
-                Name
+                Name <span className="text-[#00f0ff]" aria-hidden="true">*</span>
               </Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="your name"
                 required
+                aria-required="true"
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11"
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-white/60 text-xs tracking-widest font-syne">
-                Email
+                Email <span className="text-[#00f0ff]" aria-hidden="true">*</span>
               </Label>
               <Input
                 id="email"
@@ -59,6 +60,7 @@ export function ContactCTA() {
                 type="email"
                 placeholder="you@example.com"
                 required
+                aria-required="true"
                 className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg h-11"
               />
             </div>
@@ -66,7 +68,7 @@ export function ContactCTA() {
 
           <div className="space-y-2">
             <Label htmlFor="message" className="text-white/60 text-xs tracking-widest font-syne">
-              Message
+              Message <span className="text-[#00f0ff]" aria-hidden="true">*</span>
             </Label>
             <Textarea
               id="message"
@@ -74,6 +76,7 @@ export function ContactCTA() {
               placeholder="what's on your mind?"
               rows={5}
               required
+              aria-required="true"
               className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-lg resize-none"
             />
           </div>
