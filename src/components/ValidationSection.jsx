@@ -236,7 +236,9 @@ export function ValidationSection({ auditData }) {
               Math.round(self.progress * (NUM_FEATURES - 1)),
               NUM_FEATURES - 1
             );
-            setActiveFeature(idx);
+            // OPTIMIZATION: Identity guard short-circuits state updates on 60-120Hz scroll frames
+            // when the calculated active feature index hasn't changed.
+            setActiveFeature((prev) => (prev === idx ? prev : idx));
           },
         },
       });

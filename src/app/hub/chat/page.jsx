@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
@@ -288,7 +288,10 @@ export default function HubChat() {
 
   const deletePreset = id => setPresets(prev => prev.filter(p => p.id !== id));
 
-  const allPersonas = [
+  // OPTIMIZATION: Memoize allPersonas, selectedPersona, and selectedPersonaB to prevent
+  // allocating new persona arrays, custom mapping, and lookup iterations on every high-frequency
+  // streaming token render tick (~20-50Hz during AI responses).
+  const allPersonas = useMemo(() => [
     ...PERSONAS,
     ...customPersonas.map(cp => ({
       id: cp.id, name: cp.name,
@@ -298,14 +301,21 @@ export default function HubChat() {
       customHex: cp.colorIdx === -1 ? cp.customColor : null,
       prompt: cp.prompt, isCustom: true,
     }))
-  ];
+  ], [customPersonas]);
 
-  const selectedPersona = allPersonas.find(p => p.id === selectedPersonaId) || allPersonas[0];
+  const selectedPersona = useMemo(
+    () => allPersonas.find(p => p.id === selectedPersonaId) || allPersonas[0],
+    [allPersonas, selectedPersonaId]
+  );
   const PersonaIcon = selectedPersona.icon;
-  const selectedPersonaB = allPersonas.find(p => p.id === selectedPersonaIdB) || allPersonas[0];
+
+  const selectedPersonaB = useMemo(
+    () => allPersonas.find(p => p.id === selectedPersonaIdB) || allPersonas[0],
+    [allPersonas, selectedPersonaIdB]
+  );
   const PersonaIconB = selectedPersonaB.icon;
 
-  const buildSystemPrompt = (personaId, injects) => {
+  const buildSystemPrompt = useCallback((personaId, injects) => {
     const p = allPersonas.find(x => x.id === (personaId ?? selectedPersonaId)) || allPersonas[0];
     let sys = p.prompt;
     const activeSet = new Set(injects ?? activeInjects);
@@ -315,7 +325,7 @@ export default function HubChat() {
     if (injectInstructions.length > 0)
       sys += '\n\nAdditional Modifiers:\n' + injectInstructions.join('\n');
     return sys;
-  };
+  }, [allPersonas, selectedPersonaId, activeInjects, loadoutSlots]);
 
   // Local input state — useChat in @ai-sdk/react@3 no longer manages this for you.
   const [input, setInput] = useState('');
@@ -384,9 +394,11 @@ export default function HubChat() {
     setInput('');
   };
 
-  // Extract plain text from a UIMessage's parts array (handles markdown rendering input).
-  const getMessageText = (msg) =>
-    msg.parts?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? msg.content ?? '';
+  // OPTIMIZATION: Memoize text extractor to avoid re-allocating closure on every render frame
+  const getMessageText = useCallback(
+    (msg) => msg.parts?.filter((p) => p.type === 'text').map((p) => p.text).join('') ?? msg.content ?? '',
+    []
+  );
 
   // Renders a single pane's ScrollArea + messages. Used for both panes when dual-mode is on.
   // panePersona: the persona object for THIS pane (icon/colors/bg).
