@@ -59,9 +59,13 @@ export function ToolsSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
           {/* Card 1: Prompt Engineering */}
-          <div className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300">
-            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <ArrowUpRight className="w-5 h-5 text-white/50" />
+          <Link
+            href="/hub/snippets"
+            className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            aria-label="Prompt Engineering - Explore code snippets"
+          >
+            <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300">
+              <ArrowUpRight className="w-5 h-5 text-white/70" />
             </div>
             <div className="h-12 w-12 mb-6 rounded-full bg-emerald-500/20 flex items-center justify-center border border-emerald-500/30">
               <span className="font-mono text-emerald-400 font-bold">01</span>
@@ -71,14 +75,21 @@ export function ToolsSection() {
               Advanced context continuation strategies and chain-of-thought optimization patterns.
             </p>
             <div className="mt-auto">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded">
-                Technique
+              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded group-hover:border-emerald-500/30 group-hover:text-emerald-400 transition-colors">
+                Technique &rarr;
               </span>
             </div>
-          </div>
+          </Link>
 
           {/* Card 2: RAG Architectures */}
-          <div className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300">
+          <Link
+            href="/hub"
+            className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            aria-label="RAG Architectures - Open Hub"
+          >
+            <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300">
+              <ArrowUpRight className="w-5 h-5 text-white/70" />
+            </div>
             <div className="h-12 w-12 mb-6 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-500/30">
               <span className="font-mono text-blue-400 font-bold">02</span>
             </div>
@@ -87,15 +98,22 @@ export function ToolsSection() {
               Retrieval-Augmented Generation using vector embeddings and semantic search.
             </p>
             <div className="mt-auto flex gap-2">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded">
-                Architecture
+              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded group-hover:border-blue-500/30 group-hover:text-blue-400 transition-colors">
+                Architecture &rarr;
               </span>
             </div>
-          </div>
+          </Link>
 
-          {/* Card 3: Vercel AI SDK (Interactive Placeholder) */}
-          <div className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300">
+          {/* Card 3: Vercel AI SDK */}
+          <Link
+            href="/hub/chat"
+            className="tool-card group relative p-8 border border-white/10 bg-white/5 rounded-2xl overflow-hidden hover:border-white/30 transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+            aria-label="AI Playground - Launch chat interface"
+          >
             <div className="absolute inset-0 bg-linear-to-tr from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+            <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300">
+              <ArrowUpRight className="w-5 h-5 text-white/70" />
+            </div>
 
             <div className="h-12 w-12 mb-6 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/30">
               <span className="font-mono text-purple-400 font-bold">AI</span>
@@ -106,7 +124,7 @@ export function ToolsSection() {
             </p>
 
             {/* Placeholder Input UI */}
-            <div className="bg-black/40 border border-white/10 rounded-lg p-3 mb-4">
+            <div className="bg-black/40 border border-white/10 rounded-lg p-3 mb-4 group-hover:border-purple-500/30 transition-colors">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-white/40 font-mono">System Ready</span>
@@ -117,11 +135,11 @@ export function ToolsSection() {
             </div>
 
             <div className="mt-auto">
-              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded">
-                Interactive
+              <span className="text-xs font-mono text-white/30 uppercase tracking-widest border border-white/10 px-2 py-1 rounded group-hover:border-purple-500/30 group-hover:text-purple-400 transition-colors">
+                Launch Chat &rarr;
               </span>
             </div>
-          </div>
+          </Link>
 
         </div>
       </div>
