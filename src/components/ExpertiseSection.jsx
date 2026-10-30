@@ -4,6 +4,9 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useRef, useMemo, forwardRef, useState, useEffect } from "react";
 
+// OPTIMIZATION: Module-level constant array to avoid array allocation on every render
+const SHUTTER_KEYS = [0, 1, 2, 3, 4];
+
 // Helper Component for the stats at the bottom
 const StatBox = ({ label, value, isFloat, suffix }) => (
   <div className="text-center expertise-group">
@@ -175,7 +178,7 @@ export const ExpertiseSection = forwardRef(({ expertiseData }, ref) => {
 
       {/* SHUTTERS (Transition Layer) */}
       <div ref={shutterRef} className="absolute inset-0 z-50 flex pointer-events-none h-full w-full" style={{ contain: 'layout paint' }}>
-         {[...Array(5)].map((_, i) => (
+         {SHUTTER_KEYS.map((i) => (
            <div 
              key={i} 
              className={`w-1/5 h-full bg-black border-r border-white/10 ${!hasPlayed ? 'will-change-transform' : ''}`} 
