@@ -16,7 +16,7 @@ import {
   Briefcase, Rocket, Gamepad, Anchor, Atom, Award,
   Book, Cat, Dog, Feather, Moon, Sun, Umbrella,
   Network, Link as LinkIcon, Newspaper, Command, PenTool,
-  PanelRight, FileText, List, Trash2, Wrench, Paperclip, Mic, Share2, Bookmark, Columns
+  PanelRight, FileText, List, Trash2, Wrench, Paperclip, Mic, Share2, Bookmark, Columns, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -374,6 +374,7 @@ export default function HubChat() {
     experimental_throttle: 50,
   });
   const isLoadingB = statusB === 'submitted' || statusB === 'streaming';
+  const isGenerating = isLoading || (isDualMode && isLoadingB);
 
   const submit = (e) => {
     e?.preventDefault?.();
@@ -845,6 +846,7 @@ export default function HubChat() {
                         }
                       }}
                       placeholder="explore something new..."
+                      aria-label="Message prompt"
                       rows={2}
                       className="w-full bg-transparent text-sm text-zinc-100 placeholder:text-zinc-600 resize-none focus:outline-none custom-scrollbar"
                       style={{ maxHeight: '200px' }}
@@ -856,7 +858,7 @@ export default function HubChat() {
                     <div className="flex items-center gap-0.5 pt-2">
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="upload file"
                         aria-label="Upload file"
                       >
@@ -864,7 +866,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="connect to drive"
                         aria-label="Connect to Drive"
                       >
@@ -872,7 +874,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="share"
                         aria-label="Share chat"
                       >
@@ -882,11 +884,16 @@ export default function HubChat() {
                     <div className="pt-2">
                       <Button
                         type="submit"
-                        disabled={isLoading || !(input || '').trim()}
-                        aria-label="Send message"
-                        className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] disabled:opacity-40 disabled:hover:shadow-none"
+                        disabled={isGenerating || !(input || '').trim()}
+                        aria-label={isGenerating ? "Generating response..." : "Send message"}
+                        title={isGenerating ? "Generating response..." : "Send message"}
+                        className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:opacity-40 disabled:hover:shadow-none"
                       >
-                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        {isGenerating ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
                       </Button>
                     </div>
                   </div>
