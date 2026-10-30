@@ -18,6 +18,9 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// OPTIMIZATION: Module-level constant array to avoid array allocation on every render
+const SHUTTER_KEYS = [0, 1, 2, 3, 4];
+
 /**
  * Graphite.com-style pinned feature section:
  * - Two-column layout: left card display + right accordion nav
@@ -30,8 +33,21 @@ export function ValidationSection({ auditData }) {
   const pinRef = useRef(null);
   const shutterRef = useRef(null);
   const cardRefs = useRef([]);
+  const cardRefCallbacks = useRef([]);
   const [hasPlayed, setHasPlayed] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
+
+  // OPTIMIZATION: Cached ref callback creator ensuring ref={getCardRef(i)} maintains
+  // reference equality across activeFeature state updates. Prevents React from executing
+  // ref teardown (ref(null)) and re-attach (ref(node)) on all 5 card DOM nodes during scroll scrub.
+  const getCardRef = useCallback((i) => {
+    if (!cardRefCallbacks.current[i]) {
+      cardRefCallbacks.current[i] = (el) => {
+        cardRefs.current[i] = el;
+      };
+    }
+    return cardRefCallbacks.current[i];
+  }, []);
 
   // OPTIMIZATION: Memoize data to prevent re-creation on every state change
   const data = useMemo(() => auditData || {
@@ -266,7 +282,7 @@ export function ValidationSection({ auditData }) {
         className="absolute inset-0 z-50 flex pointer-events-none h-full w-full"
         style={{ contain: "layout paint" }}
       >
-        {[...Array(5)].map((_, i) => (
+        {SHUTTER_KEYS.map((i) => (
           <div
             key={i}
             className={`w-1/5 h-full bg-white border-r border-black/5 ${
@@ -291,7 +307,7 @@ export function ValidationSection({ auditData }) {
               {features.map((feature, i) => (
                 <CardContent
                   key={feature.id}
-                  ref={(el) => (cardRefs.current[i] = el)}
+                  ref={getCardRef(i)}
                   className="absolute inset-0 p-8 md:p-12 flex flex-col justify-center"
                 >
                   {feature.card}

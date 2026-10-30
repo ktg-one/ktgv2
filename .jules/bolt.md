@@ -25,3 +25,7 @@
 ## 2026-10-13 - [Memoizing Scrubbed Feature Cards]
 **Learning:** Components driving pinned ScrollTrigger animations update state (e.g. `activeFeature`) on scroll progress updates. Defining card JSX structures inline inside the component render body forces re-allocation of complex JSX subtrees on every scroll tick.
 **Action:** Always wrap card arrays and prop-derived data structures in `useMemo` so scroll state updates only re-render the changed UI wrappers without recreating inner JSX nodes.
+
+## 2026-10-14 - [Stable Ref Callbacks in Scroll-Scrubbed Components]
+**Learning:** When scroll-driven components trigger state updates on scroll progress (e.g. `activeFeature` in `ValidationSection`), inline ref callbacks `ref={(el) => (cardRefs.current[i] = el)}` create new function references on every render tick. This causes React to invoke ref cleanup (`ref(null)`) and re-attach (`ref(el)`) on all elements on every scroll tick during scroll scrubbing.
+**Action:** Cache ref callbacks in a `useRef` array (`cardRefCallbacks.current[i]`) so `ref={getCardRef(i)}` remains reference-stable across state updates and prevents React DOM ref teardown overhead during scroll scrub.
