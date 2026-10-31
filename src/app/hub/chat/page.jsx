@@ -16,7 +16,7 @@ import {
   Briefcase, Rocket, Gamepad, Anchor, Atom, Award,
   Book, Cat, Dog, Feather, Moon, Sun, Umbrella,
   Network, Link as LinkIcon, Newspaper, Command, PenTool,
-  PanelRight, FileText, List, Trash2, Wrench, Paperclip, Mic, Share2, Bookmark, Columns
+  PanelRight, FileText, List, Trash2, Wrench, Paperclip, Mic, Share2, Bookmark, Columns, Loader2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -137,7 +137,7 @@ const NAV_LINKS = [
 const CHAT_ROW_GLOW =
   "transition-all duration-300 border border-transparent hover:border-[rgba(0,240,255,0.28)] hover:bg-[rgba(0,240,255,0.06)] hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.22),0_0_28px_rgba(0,240,255,0.08)]";
 const CHAT_ICON_BTN =
-  "border border-zinc-800 transition-all duration-300 hover:border-[rgba(0,240,255,0.4)] hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.08)] hover:shadow-[0_0_20px_rgba(0,240,255,0.3),0_0_40px_rgba(0,240,255,0.12)]";
+  "border border-zinc-800 transition-all duration-300 hover:border-[rgba(0,240,255,0.4)] hover:text-[#00f0ff] hover:bg-[rgba(0,240,255,0.08)] hover:shadow-[0_0_20px_rgba(0,240,255,0.3),0_0_40px_rgba(0,240,255,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black";
 const CHAT_ASIDE_EDGE =
   "transition-[border-color,box-shadow] duration-300 hover:border-[rgba(0,240,255,0.22)] hover:shadow-[inset_-4px_0_28px_-6px_rgba(0,240,255,0.14)]";
 
@@ -641,9 +641,10 @@ export default function HubChat() {
                 </button>
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
-                  className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel preset"
+                  className="p-1.5 text-zinc-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -801,7 +802,7 @@ export default function HubChat() {
                             onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
                             title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
                             className={cn(
-                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
+                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                               !isLoaded
                                 ? "border border-dashed border-zinc-700 bg-zinc-950 text-zinc-500 shadow-[0_0_6px_rgba(161,161,170,0.15)] hover:border-zinc-500 hover:text-zinc-300 hover:shadow-[0_0_10px_rgba(161,161,170,0.25)]"
                                 : isActive
@@ -882,11 +883,15 @@ export default function HubChat() {
                     <div className="pt-2">
                       <Button
                         type="submit"
-                        disabled={isLoading || !(input || '').trim()}
-                        aria-label="Send message"
-                        className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] disabled:opacity-40 disabled:hover:shadow-none"
+                        disabled={isLoading || (isDualMode && isLoadingB) || !(input || '').trim()}
+                        aria-label={isLoading || (isDualMode && isLoadingB) ? "Generating response..." : "Send message"}
+                        className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] disabled:opacity-40 disabled:hover:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                       >
-                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        {isLoading || (isDualMode && isLoadingB) ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
                       </Button>
                     </div>
                   </div>
