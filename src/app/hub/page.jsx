@@ -152,10 +152,10 @@ export default function HubPage() {
                 key={tool.id}
                 href={tool.href}
                 id={tool.id}
-                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-all duration-300 hover:border-[rgba(0,240,255,0.35)] hover:bg-[rgba(0,240,255,0.04)] hover:shadow-[0_0_24px_rgba(0,240,255,0.12)]"
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-all duration-300 hover:border-[rgba(0,240,255,0.35)] hover:bg-[rgba(0,240,255,0.04)] hover:shadow-[0_0_24px_rgba(0,240,255,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
               >
                 {inner}
-                <span className="mt-5 inline-block font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-white/40 transition-colors group-hover:text-[#00f0ff]">
+                <span className="mt-5 inline-block font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-white/40 transition-colors group-hover:text-[#00f0ff] group-focus-visible:text-[#00f0ff]">
                   open →
                 </span>
               </Link>
