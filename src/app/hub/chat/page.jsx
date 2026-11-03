@@ -641,9 +641,10 @@ export default function HubChat() {
                 </button>
                 <button
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
-                  className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel saving preset"
+                  className="p-1.5 text-zinc-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -800,8 +801,10 @@ export default function HubChat() {
                             type="button"
                             onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
                             title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
+                            aria-label={isLoaded ? `Modifier slot ${slotNum}: ${slot.label}${isActive ? ', active' : ''}` : `Create modifier for slot ${slotNum}`}
+                            aria-pressed={isLoaded ? isActive : undefined}
                             className={cn(
-                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
+                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black",
                               !isLoaded
                                 ? "border border-dashed border-zinc-700 bg-zinc-950 text-zinc-500 shadow-[0_0_6px_rgba(161,161,170,0.15)] hover:border-zinc-500 hover:text-zinc-300 hover:shadow-[0_0_10px_rgba(161,161,170,0.25)]"
                                 : isActive
@@ -821,7 +824,7 @@ export default function HubChat() {
                             <button
                               type="button"
                               onClick={(e) => handleClearSlot(idx, e)}
-                              className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 transition-opacity"
+                              className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
                               title="clear slot"
                               aria-label={`Clear modifier slot ${slotNum}`}
                             >
