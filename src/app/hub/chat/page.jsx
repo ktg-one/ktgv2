@@ -142,9 +142,12 @@ const CHAT_ASIDE_EDGE =
   "transition-[border-color,box-shadow] duration-300 hover:border-[rgba(0,240,255,0.22)] hover:shadow-[inset_-4px_0_28px_-6px_rgba(0,240,255,0.14)]";
 
 // --- Icon Picker ---
+// OPTIMIZATION: Extract Object.keys(AVAILABLE_ICONS) outside component so reflection isn't repeated on each render/keystroke
+const ALL_ICON_NAMES = Object.keys(AVAILABLE_ICONS);
+
 const IconPicker = ({ selected, onSelect }) => {
   const [search, setSearch] = useState('');
-  const filtered = Object.keys(AVAILABLE_ICONS).filter(n =>
+  const filtered = ALL_ICON_NAMES.filter(n =>
     n.toLowerCase().includes(search.toLowerCase())
   );
   return (
@@ -288,7 +291,9 @@ export default function HubChat() {
 
   const deletePreset = id => setPresets(prev => prev.filter(p => p.id !== id));
 
-  const allPersonas = [
+  // OPTIMIZATION: Memoize allPersonas to avoid re-instantiating persona objects and arrays
+  // on every keystroke in the chat input or every token streamed in useChat.
+  const allPersonas = useMemo(() => [
     ...PERSONAS,
     ...customPersonas.map(cp => ({
       id: cp.id, name: cp.name,
@@ -298,7 +303,7 @@ export default function HubChat() {
       customHex: cp.colorIdx === -1 ? cp.customColor : null,
       prompt: cp.prompt, isCustom: true,
     }))
-  ];
+  ], [customPersonas]);
 
   const selectedPersona = allPersonas.find(p => p.id === selectedPersonaId) || allPersonas[0];
   const PersonaIcon = selectedPersona.icon;
