@@ -9,7 +9,7 @@ import { DefaultChatTransport } from 'ai';
 import { Streamdown } from 'streamdown';
 import {
   Bot, Terminal, Sparkles, LineChart, Globe, Settings,
-  Send, User, Cpu, Zap, Shield, Search, Plus, X,
+  Send, Loader2, User, Cpu, Zap, Shield, Search, Plus, X,
   MessageSquare, Layers, Code, Database,
   BrainCircuit, Lightbulb,
   Ghost, Flame, Star, Heart, Music, Camera, Coffee,
@@ -883,10 +883,15 @@ export default function HubChat() {
                       <Button
                         type="submit"
                         disabled={isLoading || !(input || '').trim()}
-                        aria-label="Send message"
+                        aria-label={isLoading ? "Sending message..." : "Send message"}
+                        aria-busy={isLoading}
                         className="h-8 w-8 shrink-0 rounded-none border border-[rgba(0,240,255,0.55)] bg-[#00f0ff] p-0 text-black transition-all duration-300 hover:bg-[#00f0ff]/85 hover:shadow-[0_0_22px_rgba(0,240,255,0.55),0_0_44px_rgba(0,240,255,0.25)] disabled:opacity-40 disabled:hover:shadow-none"
                       >
-                        <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        {isLoading ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        ) : (
+                          <Send className="h-3.5 w-3.5" aria-hidden="true" />
+                        )}
                       </Button>
                     </div>
                   </div>
