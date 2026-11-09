@@ -33,4 +33,8 @@ test('formatDate handles empty, invalid, null, and undefined date inputs safely'
   assert.equal(formatDate(''), '');
   assert.equal(formatDate(null), '');
   assert.equal(formatDate(undefined), '');
+  assert.equal(formatDate(true), '');
+  assert.equal(formatDate(false), '');
+  assert.equal(formatDate(12345), '');
+  assert.equal(formatDate({}), '');
 });

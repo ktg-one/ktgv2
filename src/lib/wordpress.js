@@ -185,7 +185,7 @@ const blogDateFormatter = new Intl.DateTimeFormat('en-US', {
 
 // Format date
 export function formatDate(dateString) {
-  if (!dateString) return '';
+  if (!dateString || (typeof dateString !== 'string' && !(dateString instanceof Date))) return '';
   try {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return '';
