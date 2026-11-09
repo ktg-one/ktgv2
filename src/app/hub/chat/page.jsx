@@ -288,7 +288,10 @@ export default function HubChat() {
 
   const deletePreset = id => setPresets(prev => prev.filter(p => p.id !== id));
 
-  const allPersonas = [
+  // OPTIMIZATION: Memoize allPersonas to avoid re-allocating the persona array and mapping
+  // custom persona objects on every keystroke and streaming chunk render.
+  // Reduces GC pressure and ensures stable persona object references across input changes.
+  const allPersonas = useMemo(() => [
     ...PERSONAS,
     ...customPersonas.map(cp => ({
       id: cp.id, name: cp.name,
@@ -298,11 +301,17 @@ export default function HubChat() {
       customHex: cp.colorIdx === -1 ? cp.customColor : null,
       prompt: cp.prompt, isCustom: true,
     }))
-  ];
+  ], [customPersonas]);
 
-  const selectedPersona = allPersonas.find(p => p.id === selectedPersonaId) || allPersonas[0];
+  const selectedPersona = useMemo(
+    () => allPersonas.find(p => p.id === selectedPersonaId) || allPersonas[0],
+    [allPersonas, selectedPersonaId]
+  );
   const PersonaIcon = selectedPersona.icon;
-  const selectedPersonaB = allPersonas.find(p => p.id === selectedPersonaIdB) || allPersonas[0];
+  const selectedPersonaB = useMemo(
+    () => allPersonas.find(p => p.id === selectedPersonaIdB) || allPersonas[0],
+    [allPersonas, selectedPersonaIdB]
+  );
   const PersonaIconB = selectedPersonaB.icon;
 
   const buildSystemPrompt = (personaId, injects) => {
