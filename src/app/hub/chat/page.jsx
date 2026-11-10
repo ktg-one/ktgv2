@@ -640,10 +640,12 @@ export default function HubChat() {
                   save
                 </button>
                 <button
+                  type="button"
                   onClick={() => { setIsSavingPreset(false); setPresetNameInput(''); }}
-                  className="p-1.5 text-zinc-500 hover:text-white transition-colors"
+                  aria-label="Cancel saving preset"
+                  className="p-1.5 text-zinc-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <X className="h-3.5 w-3.5" aria-hidden="true" />
                 </button>
               </div>
             ) : (
@@ -801,7 +803,7 @@ export default function HubChat() {
                             onClick={() => isLoaded ? toggleInject(slot.id) : openCreateForSlot(idx)}
                             title={isLoaded ? `slot ${slotNum} · ${slot.label}` : `slot ${slotNum} · click to create`}
                             className={cn(
-                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase",
+                              "h-8 px-3 flex items-center gap-2 transition-all duration-200 font-[family-name:var(--font-syne)] text-xs lowercase focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-1 focus-visible:ring-offset-black",
                               !isLoaded
                                 ? "border border-dashed border-zinc-700 bg-zinc-950 text-zinc-500 shadow-[0_0_6px_rgba(161,161,170,0.15)] hover:border-zinc-500 hover:text-zinc-300 hover:shadow-[0_0_10px_rgba(161,161,170,0.25)]"
                                 : isActive
@@ -821,7 +823,7 @@ export default function HubChat() {
                             <button
                               type="button"
                               onClick={(e) => handleClearSlot(idx, e)}
-                              className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 transition-opacity"
+                              className="absolute -top-1.5 -right-1.5 h-4 w-4 flex items-center justify-center bg-zinc-900 border border-zinc-700 text-zinc-500 hover:text-red-400 hover:border-red-500 opacity-0 group-hover/slot:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff] transition-opacity"
                               title="clear slot"
                               aria-label={`Clear modifier slot ${slotNum}`}
                             >
@@ -856,7 +858,7 @@ export default function HubChat() {
                     <div className="flex items-center gap-0.5 pt-2">
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="upload file"
                         aria-label="Upload file"
                       >
@@ -864,7 +866,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="connect to drive"
                         aria-label="Connect to Drive"
                       >
@@ -872,7 +874,7 @@ export default function HubChat() {
                       </button>
                       <button
                         type="button"
-                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)]"
+                        className="rounded-none p-1.5 text-zinc-600 transition-all duration-300 hover:text-[#00f0ff] hover:shadow-[0_0_14px_rgba(0,240,255,0.25)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#00f0ff]"
                         title="share"
                         aria-label="Share chat"
                       >
