@@ -125,7 +125,10 @@ export default async function BlogPage() {
 
                     {/* Content */}
                     <div className="flex-1 flex flex-col justify-center">
-                      <Link href={`/blog/${post.slug}`} className="block focus:outline-none">
+                      <Link
+                        href={`/blog/${post.slug}`}
+                        className="block rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black transition-shadow"
+                      >
                         <h2 className="font-syne text-3xl font-bold mb-3 text-white group-hover:text-white/70 transition-colors lowercase">
                           {title}
                         </h2>
