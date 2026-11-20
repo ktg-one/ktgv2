@@ -40,17 +40,17 @@ export function SnippetViewer({ snippet, content }) {
           onClick={handleCopy}
           variant="outline"
           size="sm"
-          className="shrink-0"
+          className="shrink-0 focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           aria-label={copied ? "Snippet copied to clipboard" : "Copy snippet code"}
         >
           {copied ? (
             <>
-              <Check className="h-4 w-4 mr-2" />
+              <Check className="h-4 w-4 mr-2" aria-hidden="true" />
               Copied
             </>
           ) : (
             <>
-              <Copy className="h-4 w-4 mr-2" />
+              <Copy className="h-4 w-4 mr-2" aria-hidden="true" />
               Copy
             </>
           )}
@@ -64,14 +64,14 @@ export function SnippetViewer({ snippet, content }) {
             onClick={handleCopy}
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 focus-visible:ring-2 focus-visible:ring-[#00f0ff] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             aria-label={copied ? "Copied snippet code" : "Copy snippet code"}
             title={copied ? "Copied snippet code" : "Copy snippet code"}
           >
             {copied ? (
-              <Check className="h-4 w-4" />
+              <Check className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <Copy className="h-4 w-4" />
+              <Copy className="h-4 w-4" aria-hidden="true" />
             )}
           </Button>
         </div>
